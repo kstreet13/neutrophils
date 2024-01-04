@@ -1,0 +1,44 @@
+
+
+
+
+gene expression in septic shock
+systemic inflammation
+data collection challenges in trauma
+there are different subtypes
+7 patients with vasoplegic syndrome
+12 with septic shock
+8 with neither(?)
+bulk neutrophils, RNAseq
+RPKM
+samps cluster by timepoint (do PCA)
+change definition of "recovering" genes
+
+Fig 2 adds in patients with vasoplegic syndrome
+25-50% w/bypass surgery get it, half do badly
+
+flowchart: find most interesting genes(?)
+excluded genes only changing between 2nd two timepoints
+
+sever vaso synd looks like septic shock
+
+
+
+analysis has been going on 4 years
+UCLA person makes figures, doesn't have bandwidth or biostats training
+
+
+first:
+explain GEO2R (1-2 sentence)
+names of datasets we've downloaded
+
+clustering (old way and my way)
+PCA
+
+
+
+
+
+
+
+
