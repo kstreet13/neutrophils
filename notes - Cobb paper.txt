@@ -36,6 +36,8 @@ clustering (old way and my way)
 PCA
 
 
+so far: ~2 hours
+
 
 
 
