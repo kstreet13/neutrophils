@@ -1,0 +1,101 @@
+2023-05-17
+----------
+Time series bulk RNAseq
+4 time points
+Inflammation after trauma
+In neutrophil tissue compartment
+
+Did a similar study in septic shock
+3 timepoints
+
+Looking at gene modules related to multi-organ failure
+See if they're similar to septic shock
+
+Planning R21 for October
+
+Bulk vs. scRNAseq
+How to compare? Make sense of new in sense of old
+
+Neutrophils are not as well characterized in the literature
+Can make networks weird
+
+Lot of trauma data out there
+Might use public data for comparison
+ 
+
+2024-01-04
+----------
+Cobb paper
+gene expression in septic shock
+systemic inflammation
+data collection challenges in trauma
+there are different subtypes
+7 patients with vasoplegic syndrome
+12 with septic shock
+8 with neither(?)
+bulk neutrophils, RNAseq
+RPKM
+samps cluster by timepoint (do PCA)
+change definition of "recovering" genes
+
+Fig 2 adds in patients with vasoplegic syndrome
+25-50% w/bypass surgery get it, half do badly
+
+flowchart: find most interesting genes(?)
+excluded genes only changing between 2nd two timepoints
+
+sever vaso synd looks like septic shock
+
+
+
+analysis has been going on 4 years
+UCLA person makes figures, doesn't have bandwidth or biostats training
+
+
+first:
+explain GEO2R (1-2 sentence)
+names of datasets we've downloaded
+
+clustering (old way and my way)
+PCA
+
+
+
+
+2024-01-24
+----------
+Phil Scumpia from UCLA
+
+Want mechanistic GO terms from DE genes between groups
+
+They have a second dataset from a more controlled setting, two types of response
+
+Project has been going on >4 years
+Initially, sub-types of neutrophils were not well known
+
+New papers do scRNAseq on neutrophils, found immature, netosis(?), MMP8+ subgroups
+
+Genes associated with these subgroups may overlap with genes relevant to clinical outcome
+Could get more mechanism in the story
+
+Similarity between sepsis and VS
+
+Generate 3D pca plot, send loadings
+Check re-run PCA with genes based on variance
+
+Do PCA with subsets:
+1. Surgical controls vs healthy controls (all timepoints)
+2. Post-bypass timepoints (B and C) all patients ?
+
+
+
+
+
+so far: ~4 hours
+
+
+
+
+
+
+
