@@ -91,7 +91,7 @@ Do PCA with subsets:
 
 
 
-so far: ~4 hours
+so far: ~7 hours
 
 
 
