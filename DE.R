@@ -1,3 +1,5 @@
+source('cluster.R')
+
 require(DESeq2)
 
 pheno$timepoint <- factor(pheno$timepoint)

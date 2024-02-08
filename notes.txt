@@ -89,9 +89,14 @@ Do PCA with subsets:
 
 
 
+2024-02-02
+----------
+do some clustering
+do some DE (between groups of interest, from Anaar, and between clusters)
 
 
-so far: ~7 hours
+
+so far: ~8 hours
 
 
 

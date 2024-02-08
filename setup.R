@@ -1,3 +1,4 @@
+set.seed(1)
 require(readxl)
 require(Matrix)
 counts <- as.matrix(read_excel('data/Raw Counts.xlsx', sheet=1))
