@@ -25,15 +25,19 @@ group <- gsub("([[:digit:]]+)([[:alnum:]]*)$", '',colnames(counts))
 timepoint <- gsub("([[:alpha:]]+)([[:digit:]]+)", '',colnames(counts))
 timepoint[timepoint==''] <- "0"
 patient <- gsub("([[:alpha:]]*)$", '',colnames(counts))
+mmp8 <- rep(NA, ncol(counts))
+mmp8[patient %in% paste0('SS',1:6)] <- 'MMP8+'
+mmp8[patient %in% paste0('SS',7:12)] <- 'MMP8-'
 
 pheno <- data.frame(
     sample = colnames(counts),
     group = group,
     timepoint = timepoint,
-    patient = patient
+    patient = patient,
+    mmp8 = mmp8
 )
 
-rm(group, timepoint, patient)
+rm(group, timepoint, patient, mmp8)
 
 # color
 # Blue: ED (ambulatory, healthy) controls
