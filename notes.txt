@@ -92,12 +92,16 @@ Do PCA with subsets:
 2024-02-02
 ----------
 X - clustering
-DE between MMP8+ (SS1-6) and MMP8- (SS7-12)
-DE between clusters
+X - DE between MMP8+ (SS1-6) and MMP8- (SS7-12)
+X - DE between clusters
 
 
+2024-02-12
+----------
+send cluster heatmap
 
-so far: ~9 hours
+
+so far: ~10 hours
 
 
 

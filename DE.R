@@ -48,6 +48,9 @@ for(c in unique(pheno$cluster)){
         tab$cluster <- c
         #de <- unique(c(de, rownames(tab)[which(tab$padj < .01)]))
         de <- rbind(de, tab[which(tab$padj < .01), ])
+        
+        # fix issue with rownames
+        
     }
 }
 pheno$clusFac <- NULL
