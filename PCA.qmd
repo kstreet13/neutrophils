@@ -41,7 +41,9 @@ plot(pctvar, type= 'b')
 ```
 
 ## Alternate PCA 1: CPM cut-off of 5
+
 <details>
+
 I also tried a couple alternative approaches that yielded pretty similar results.
 
 ```{r}
@@ -51,10 +53,13 @@ filtAlt <- which(rowMeans(cpm) > 5)
 pcaAlt <- BiocSingular::runPCA(t(log1p(cpm[filtAlt, ])), rank=64)
 plot_ly(data.frame(pcaAlt$x), x=~PC1, y=~PC2, z=~PC3, color = pheno$color, colors = sort(unique(pheno$color)))
 ```
+
 </details>
 
 ## Alternate PCA 2: 10,000 most variable genes
+
 <details>
+
 ```{r}
 #| message: false
 #| fig-height: 6
@@ -63,12 +68,15 @@ filtAlt <- which(rowVars(cpm) >= sort(rowVars(cpm), decreasing = TRUE)[10000])
 pcaAlt <- BiocSingular::runPCA(t(log1p(cpm[filtAlt, ])), rank=64)
 plot_ly(data.frame(pcaAlt$x), x=~PC1, y=~PC2, z=~PC3, color = pheno$color, colors = sort(unique(pheno$color)))
 ```
+
 </details>
 
 ## Subset Analysis
+
 Since we don't have a huge number of samples, I don't think we can get much out of this type of analysis. I would treat these as purely exploratory. When we do differential expression testing, then it's fine to use smaller subsets (8 v. 8 is still pretty robust, in that case), but I wouldn't read too much into the PCA plots.
 
 ## Subset 1: All controls
+
 ```{r}
 #| message: false
 ind <- which(pheno$group %in% c('SC','EC'))
@@ -80,6 +88,7 @@ plot_ly(data.frame(pca$x), x=~PC1, y=~PC2, z=~PC3, color = pheno$color[ind], col
 ```
 
 ## Subset 2: All post-bypass samples
+
 ```{r}
 #| message: false
 ind <- which(pheno$timepoint %in% c('B','C'))
@@ -89,5 +98,3 @@ pca <- BiocSingular::runPCA(t(log1p(subcpm[filt, ])), rank=length(ind))
 #plot(pca$sdev^2/sum(pca$sdev^2))
 plot_ly(data.frame(pca$x), x=~PC1, y=~PC2, z=~PC3, color = pheno$color[ind], colors = sort(unique(pheno$color[ind])))
 ```
-
-

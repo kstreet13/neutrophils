@@ -1,0 +1,152 @@
+---
+title: "Neutrophil Subclustering"
+format: html
+embed-resources: true
+---
+
+## Surgical Control Samples
+
+For this analysis, I converted the raw counts into counts per million (CPM) and filtered out genes with an average CPM less than 1, across all surgical control samples. This is a fairly permissive inclusion criteria, and it left us with 10,790 "expressed" genes. PCA was then performed on the $log(\text{CPM}+1)$ values.
+
+These samples mostly cluster by timepoint, with clear "A", "B", and "C" clusters. However, samples "SC7C" and "SC8C" clearly cluster with the "A" group. Additionally, there is a group of 3 samples that sit somewhere in between the "A" and "B" clusters. They're a bit too spread out for me to call them a fourth cluster, but they're hard to classify. The PCA plot below is a reasonably good representation of the data, explaining 56% of the overall variance (36.7%, 13.3%, and 6.1% respectively).
+
+```{r}
+#| echo: false
+#| message: false
+source('setup.R')
+cpm <- t(t(1e6*counts)/colSums(counts))
+idx <- which(pheno$group == 'SC')
+pheno <- pheno[idx, ]
+counts <- counts[, idx]
+cpm <- cpm[, idx]
+
+# PCA
+filt <- which(rowMeans(cpm) > 1)
+pca <- BiocSingular::runPCA(t(log1p(cpm[filt, ])), rank=ncol(counts))
+```
+
+
+```{r}
+#| echo: false
+print('Samples:')
+print(sort(pheno$patient))
+```
+
+```{r}
+#| echo: false
+#| message: false
+require(plotly)
+plot_ly(data.frame(pca$x), x=~PC1, y=~PC2, z=~PC3, color = pheno$color, colors = sort(unique(pheno$color))) |> layout(scene = list(aspectmode='data'))
+```
+Timepoint A = green
+
+Timepoint B = red
+
+Timepoint C = purple
+
+
+I tried a few different clustering methods and there was no consensus on how to classify the three intermediate samples ("SC4A", "SC8A", and "SC1B"). 
+
+Here, I used a consensus clustering approach and the intermediate samples clustered with the "B" group. Colors in the heatmap represent the proportion of times a pair of samples clustered together, with darker being more often.
+
+```{r}
+#| echo: false
+#| message: false
+# clustering
+clusMat <- NULL
+
+require(mclust)
+mc <- Mclust(pca$x[,1:4], G=1:6)
+
+for(ndim in c(2,4,7)){
+    clusMat <- cbind(clusMat, sapply(3:6, function(k){
+        kmeans(pca$x[,1:ndim], k)$cluster
+    }))
+    clusMat <- cbind(clusMat, sapply(c(3,5,7), function(k){
+        cutree(hclust(dist(pca$x[,1:ndim])), k = k)
+    }))
+}
+coClus <- apply(clusMat, 1, function(x){
+    colMeans(x == t(clusMat))
+})
+clus <- cutree(hclust(as.dist(1-coClus)), k=3)
+
+heatmap(coClus, ColSideColors = as.character(clus), RowSideColors = pheno$color)
+```
+
+Here, I used a Gaussian mixture model (on the top 4 PCs) and the intermediate samples clustered with the "A" group. Colors in the heatmap represent distances between pairs of samples, with darker being farther apart.
+
+```{r}
+#| echo: false
+#| message: false
+heatmap(as.matrix(dist(pca$x[,1:4])), ColSideColors = as.character((c(4,6,7))[mc$classification]), RowSideColors = pheno$color, symm = TRUE)
+```
+
+I slightly prefer the second method, because it chose the number of clusters based on BIC (selecting between 1-6 clusters) and with fewer samples, I think a parametric model makes sense.
+
+
+## Sepsis Samples
+
+I don't think there's anything super interesting going on, here. You said your prior analysis indicated that this was kind of a mess and I tend to agree. In the PCA plot, the top 3 PCs explain 26.9%, 20.4%, and 14.3% of the variance, respectively.
+
+```{r}
+#| echo: false
+#| message: false
+source('setup.R')
+cpm <- t(t(1e6*counts)/colSums(counts))
+idx <- which(pheno$group == 'SS')
+pheno <- pheno[idx, ]
+counts <- counts[, idx]
+cpm <- cpm[, idx]
+
+# PCA
+filt <- which(rowMeans(cpm) > 1)
+pca <- BiocSingular::runPCA(t(log1p(cpm[filt, ])), rank=ncol(counts))
+
+pheno$mmp8col <- col2hcl(1)
+pheno$mmp8col[pheno$mmp8 == "MMP8-"] <- col2hcl(2)
+```
+
+```{r}
+#| echo: false
+#| message: false
+require(plotly)
+plot_ly(data.frame(pca$x), x=~PC1, y=~PC2, z=~PC3, color = pheno$mmp8col, colors = sort(unique(pheno$mmp8col))) |> layout(scene = list(aspectmode='data'))
+```
+MMP8+ = black
+
+MMP8- = red
+
+
+I ran the same clustering methods as above, though with only 12 samples, I definitely think the Gaussian mixture model is more appropriate, so I'm only showing those results. That said, it picked 3 clusters, so I don't really trust it that much. Based on the heatmap of pairwise distances, there does not seem to be much structure in the data.
+```{r}
+#| echo: false
+# clustering
+clusMat <- NULL
+
+require(mclust)
+mc <- Mclust(pca$x[,1:4], G=1:6)
+
+for(ndim in c(2,4,6)){
+    clusMat <- cbind(clusMat, sapply(2:4, function(k){
+        kmeans(pca$x[,1:ndim], k)$cluster
+    }))
+    clusMat <- cbind(clusMat, sapply(2:4, function(k){
+        cutree(hclust(dist(pca$x[,1:ndim])), k = k)
+    }))
+}
+
+
+coClus <- apply(clusMat, 1, function(x){
+    colMeans(x == t(clusMat))
+})
+
+
+clus <- cutree(hclust(as.dist(1-coClus)), k=3)
+
+
+#heatmap(coClus, ColSideColors = as.character(clus), RowSideColors = c('1','2')[factor(pheno$mmp8)])
+heatmap(as.matrix(dist(pca$x[,1:4])), ColSideColors = as.character((c(4,6,7))[mc$classification]), RowSideColors = pheno$mmp8col, symm = TRUE, labRow = pheno$mmp8)
+```
+
+

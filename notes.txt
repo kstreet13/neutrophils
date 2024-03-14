@@ -101,7 +101,7 @@ X - DE between clusters
 send cluster heatmap
 
 
-so far: ~10 hours
+so far: ~13 hours
 
 
 
