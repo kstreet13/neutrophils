@@ -1,0 +1,46 @@
+---
+title: "Neutrophil Subclustering 2"
+format: html
+embed-resources: true
+---
+
+## Surgical Control Samples
+
+```{r}
+#| echo: false
+#| message: false
+source('setup.R')
+cpm <- t(t(1e6*counts)/colSums(counts))
+idx <- which(pheno$group == 'SC')
+pheno <- pheno[idx, ]
+counts <- counts[, idx]
+cpm <- cpm[, idx]
+
+# PCA
+filt <- which(rowMeans(cpm) > 1)
+pca <- BiocSingular::runPCA(t(log1p(cpm[filt, ])), rank=ncol(counts))
+```
+
+```{r}
+#| echo: false
+#| message: false
+require(plotly)
+plot_ly(data.frame(pca$x), x=~PC1, y=~PC2, z=~PC3, color = pheno$color, colors = sort(unique(pheno$color))) |> layout(scene = list(aspectmode='data'))
+```
+Timepoint A = green
+
+Timepoint B = red
+
+Timepoint C = purple
+
+```{r}
+#| echo: false
+#| message: false
+imp <- sqrt(rowSums(pca$rotation[,1:3]^2))
+barplot(sort(imp, decreasing = TRUE)[1:20], las=2, main = 'Top 20 Genes by PCA importance')
+```
+```{r}
+#| echo: false
+#| message: false
+barplot(sort(imp, decreasing = TRUE)[1:100], col = c(rep('grey50',20),rep(2,80)), main = 'Top 100 Genes by PCA importance', las=2, cex.names = .2)
+```

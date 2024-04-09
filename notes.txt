@@ -101,7 +101,16 @@ X - DE between clusters
 send cluster heatmap
 
 
-so far: ~13 hours
+2024-04-09
+----------
+DE for patients with normal surgical response
+To check against previous (rpkm-based) results
+SC 3 timepoints DE signatures
+All 3 pairwise comparisons
+
+
+
+so far: ~15 hours
 
 
 
