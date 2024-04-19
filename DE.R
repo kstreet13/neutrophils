@@ -10,7 +10,22 @@ pheno$mmp8 <- factor(pheno$mmp8)
 
 
 
-# Surgical controls
+# Full model??
+############
+p <- pheno
+p$timepoint[p$timepoint==0] <- 'A'
+p$timepoint <- factor(p$timepoint)
+
+ds <- DESeqDataSetFromMatrix(countData = counts,
+                             colData = p,
+                             design= ~ group + timepoint)
+res <- DESeq(ds)
+
+
+
+
+
+# Surgical controls (by timepoint)
 ###################
 # all three pairwise comparisons between timepoints within the SC group
 ind <- which(pheno$group=='SC')
@@ -18,26 +33,19 @@ ds <- DESeqDataSetFromMatrix(countData = counts[,ind],
                              colData = pheno[ind,],
                              design= ~timepoint)
 res <- DESeq(ds)
-res1 <- results(res, alpha = .05, name = 'timepoint_B_vs_A')
+res1 <- results(res, alpha = .05, contrast = c('timepoint', 'B', 'A'))
+res2 <- results(res, alpha = .05, contrast = c('timepoint', 'C', 'A'))
+res3 <- results(res, alpha = .05, contrast = c('timepoint', 'C', 'B'))
 names(res1) <- paste0('AB_', names(res1))
-res2 <- results(res, alpha = .05, name = 'timepoint_C_vs_A')
 names(res2) <- paste0('AC_', names(res2))
-
-pheno$timepoint <- factor(pheno$timepoint, levels = c('B','C','A'))
-ds <- DESeqDataSetFromMatrix(countData = counts[,ind],
-                             colData = pheno[ind,],
-                             design= ~timepoint)
-res <- DESeq(ds)
-res3 <- results(res, alpha = .05, name = 'timepoint_C_vs_B')
 names(res3) <- paste0('BC_', names(res3))
-
 
 hits <- cbind(res1,res2,res3)
 hits <- hits[which((hits$AB_padj < .05 & abs(hits$AB_log2FoldChange) > 1.5) | 
                    (hits$AC_padj < .05 & abs(hits$AC_log2FoldChange) > 1.5) | 
                    (hits$BC_padj < .05 & abs(hits$BC_log2FoldChange) > 1.5)), ]
 
-heatmat <- as.matrix(cpm[rownames(hits), pheno$group=='SC'])
+heatmat <- log1p(as.matrix(cpm[rownames(hits), pheno$group=='SC']))
 heatmat <- (heatmat-rowMeans(heatmat)) / rowSds(heatmat)
 
 require(pheatmap)
@@ -45,28 +53,92 @@ rownames(pheno) <- pheno$sample
 pheno$timepoint <- factor(pheno$timepoint, levels = c('A','B','C'))
 
 annGene <- data.frame(
-    AB = rep(NA, nrow(heatmat)),
-    AC = rep(NA, nrow(heatmat)),
-    BC = rep(NA, nrow(heatmat))
+    AvsB = rep(NA, nrow(heatmat)),
+    AvsC = rep(NA, nrow(heatmat)),
+    BvsC = rep(NA, nrow(heatmat))
 )
-annGene$AB[hits$AB_padj < .05 & hits$AB_log2FoldChange < 0] <- 'green'
-annGene$AB[hits$AB_padj < .05 & hits$AB_log2FoldChange > 0] <- 'red'
-annGene$AC[hits$AC_padj < .05 & hits$AC_log2FoldChange < 0] <- 'green'
-annGene$AC[hits$AC_padj < .05 & hits$AC_log2FoldChange > 0] <- 'purple'
-annGene$BC[hits$BC_padj < .05 & hits$BC_log2FoldChange < 0] <- 'red'
-annGene$BC[hits$BC_padj < .05 & hits$BC_log2FoldChange > 0] <- 'purple'
+annGene$AvsB[hits$AB_padj < .05 & hits$AB_log2FoldChange < 0] <- 'A'
+annGene$AvsB[hits$AB_padj < .05 & hits$AB_log2FoldChange > 0] <- 'B'
+annGene$AvsC[hits$AC_padj < .05 & hits$AC_log2FoldChange < 0] <- 'A'
+annGene$AvsC[hits$AC_padj < .05 & hits$AC_log2FoldChange > 0] <- 'C'
+annGene$BvsC[hits$BC_padj < .05 & hits$BC_log2FoldChange < 0] <- 'B'
+annGene$BvsC[hits$BC_padj < .05 & hits$BC_log2FoldChange > 0] <- 'C'
 rownames(annGene) <- rownames(hits)
 
 ann_colors = list(
     timepoint = c(A = "green", B = "red", C = "purple"),
-    AB = c(green = "green", red = "red"),
-    AC = c(green = "green", purple = "purple"),
-    BC = c(red = "red", purple = "purple")
+    AvsB = c(A = "green", B = "red"),
+    AvsC = c(A = "green", C = "purple"),
+    BvsC = c(B = "red", C = "purple")
 )
-pheatmap(heatmat, annotation_col = pheno[pheno$group=='SC','timepoint',drop=FALSE], annotation_colors = ann_colors, labels_row = rep('',nrow(heatmat)), annotation_row = annGene)
+pheatmap(heatmat, annotation_col = pheno[pheno$group=='SC','timepoint',drop=FALSE], annotation_colors = ann_colors, labels_row = rep('',nrow(heatmat)), annotation_row = annGene, cluster_cols = FALSE, treeheight_row = 0)
 
 
 
+
+
+# MVS/SVS (by timepoint)
+###################
+# all three pairwise comparisons between timepoints within the MVS/SVS groups
+ind <- which(pheno$group=='SVS')
+ds <- DESeqDataSetFromMatrix(countData = counts[,ind],
+                             colData = pheno[ind,],
+                             design= ~timepoint)
+res <- DESeq(ds)
+res1 <- results(res, alpha = .05, contrast = c('timepoint', 'B', 'A'))
+res2 <- results(res, alpha = .05, contrast = c('timepoint', 'C', 'A'))
+res3 <- results(res, alpha = .05, contrast = c('timepoint', 'C', 'B'))
+names(res1) <- paste0('AB_', names(res1))
+names(res2) <- paste0('AC_', names(res2))
+names(res3) <- paste0('BC_', names(res3))
+
+hits <- cbind(res1,res2,res3)
+hits <- hits[which((hits$AB_padj < .05 & abs(hits$AB_log2FoldChange) > 1.5) | 
+                       (hits$AC_padj < .05 & abs(hits$AC_log2FoldChange) > 1.5) | 
+                       (hits$BC_padj < .05 & abs(hits$BC_log2FoldChange) > 1.5)), ]
+
+heatmat <- log1p(as.matrix(cpm[rownames(hits), pheno$group=='SC']))
+heatmat <- (heatmat-rowMeans(heatmat)) / rowSds(heatmat)
+
+require(pheatmap)
+rownames(pheno) <- pheno$sample
+pheno$timepoint <- factor(pheno$timepoint, levels = c('A','B','C'))
+
+annGene <- data.frame(
+    AvsB = rep(NA, nrow(heatmat)),
+    AvsC = rep(NA, nrow(heatmat)),
+    BvsC = rep(NA, nrow(heatmat))
+)
+annGene$AvsB[hits$AB_padj < .05 & hits$AB_log2FoldChange < 0] <- 'A'
+annGene$AvsB[hits$AB_padj < .05 & hits$AB_log2FoldChange > 0] <- 'B'
+annGene$AvsC[hits$AC_padj < .05 & hits$AC_log2FoldChange < 0] <- 'A'
+annGene$AvsC[hits$AC_padj < .05 & hits$AC_log2FoldChange > 0] <- 'C'
+annGene$BvsC[hits$BC_padj < .05 & hits$BC_log2FoldChange < 0] <- 'B'
+annGene$BvsC[hits$BC_padj < .05 & hits$BC_log2FoldChange > 0] <- 'C'
+rownames(annGene) <- rownames(hits)
+
+ann_colors = list(
+    timepoint = c(A = "green", B = "red", C = "purple"),
+    AvsB = c(A = "green", B = "red"),
+    AvsC = c(A = "green", C = "purple"),
+    BvsC = c(B = "red", C = "purple")
+)
+pheatmap(heatmat, annotation_col = pheno[pheno$group=='SC','timepoint',drop=FALSE], annotation_colors = ann_colors, labels_row = rep('',nrow(heatmat)), annotation_row = annGene, cluster_cols = FALSE, treeheight_row = 0)
+
+
+
+
+# SS vs EC 
+###########
+ds <- DESeqDataSetFromMatrix(countData = counts,
+                             colData = pheno,
+                             design= ~group)
+res <- DESeq(ds)
+res1 <- results(res, alpha = .05, contrast = c('group', 'EC', 'SS'))
+
+
+hits <- res1
+hits <- hits[which(hits$padj < .05 & abs(hits$log2FoldChange) > 1.5), ]
 
 
 
