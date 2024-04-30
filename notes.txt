@@ -109,8 +109,13 @@ SC 3 timepoints DE signatures
 All 3 pairwise comparisons
 
 
+2024-04-30
+----------
+send dendrograms
 
-so far: ~16 hours
+
+
+so far: ~17 hours
 
 
 
