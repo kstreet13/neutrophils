@@ -1,4 +1,4 @@
-# dendrograms two ways
+# dendrograms a few ways
 
 source('setup.R')
 cpm <- t(t(1e6*counts)/colSums(counts))
