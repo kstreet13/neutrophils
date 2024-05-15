@@ -116,12 +116,15 @@ send dendrograms
 
 2024-05-07
 ----------
-Anwar looking at my DE lists, trying to compare to hers
+Anaar looking at my DE lists, trying to compare to hers
 Re-created her list for surgical controls, looking for overlap
 Email Morgan about payment
 *** generate DE list Anaar's way (at least 1.5x change in every pair of samples) and compare
 
 
+2024-05-15
+----------
+Our DE lists don't overlap very well
 
 
 
@@ -130,7 +133,8 @@ Email Morgan about payment
 
 
 
-so far: ~18 hours
+
+so far: ~20 hours
 
 
 
