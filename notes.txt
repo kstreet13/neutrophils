@@ -132,7 +132,12 @@ Our DE lists don't overlap very well
 Send Anaar all 12 DE lists
 
 
-
+2024-05-28
+----------
+*** generate same DE lists for vasoplegic patients
+*** within Mild (MVS): do similar timepoint analysis
+*** same within Severe (SVS)
+*** 9 groups of genes (up/down/same between consecutive timepoints)
 
 
 
