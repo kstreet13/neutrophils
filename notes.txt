@@ -134,15 +134,22 @@ Send Anaar all 12 DE lists
 
 2024-05-28
 ----------
-*** generate same DE lists for vasoplegic patients
-*** within Mild (MVS): do similar timepoint analysis
-*** same within Severe (SVS)
-*** 9 groups of genes (up/down/same between consecutive timepoints)
+generate same DE lists for vasoplegic patients
+within Mild (MVS): do similar timepoint analysis
+same within Severe (SVS)
+9 groups of genes (up/down/same between consecutive timepoints)
+
+
+2024-06-26
+----------
+mmp8+ list doesn't include mmp8
+re-do MMP8+, MMP8-, and SS lists
+I swapped MMP8+ and - labels,
+are we sure SS6 is MMP8-? It's a big outlier
 
 
 
-
-so far: ~20 hours
+so far: ~21 hours
 
 
 

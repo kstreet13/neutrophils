@@ -6,6 +6,10 @@ rownames(counts) <- counts[,1]
 counts <- counts[,-1]
 mode(counts) <- 'numeric'
 counts <- Matrix(counts, sparse = TRUE)
+# add SS6
+raw_counts_SS6 <- read.delim("data/raw_counts_SS6.txt")
+counts <- cbind(counts, SS6 = raw_counts_SS6[,2])
+rm(raw_counts_SS6)
 
 # remove rows with 0 counts
 counts <- counts[rowSums(counts) > 0, ]
@@ -26,8 +30,8 @@ timepoint <- gsub("([[:alpha:]]+)([[:digit:]]+)", '',colnames(counts))
 timepoint[timepoint==''] <- "0"
 patient <- gsub("([[:alpha:]]*)$", '',colnames(counts))
 mmp8 <- rep(NA, ncol(counts))
-mmp8[patient %in% paste0('SS',1:6)] <- 'MMP8+'
-mmp8[patient %in% paste0('SS',7:12)] <- 'MMP8-'
+mmp8[patient %in% paste0('SS',1:6)] <- 'MMP8-'
+mmp8[patient %in% paste0('SS',7:12)] <- 'MMP8+'
 
 pheno <- data.frame(
     sample = colnames(counts),
@@ -61,6 +65,8 @@ pheno$color <- case_when(
     pheno$group %in% c('MVS','SVS') & pheno$timepoint =='C' ~ 'slateblue4'
 )
 
+pheno <- pheno[order(pheno$sample), ]
+counts <- counts[ ,order(colnames(counts))]
 
-
-
+# check
+all(pheno$sample == colnames(counts))
