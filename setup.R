@@ -4,12 +4,16 @@ require(Matrix)
 counts <- as.matrix(read_excel('data/Raw Counts.xlsx', sheet=1))
 rownames(counts) <- counts[,1]
 counts <- counts[,-1]
+
+# exclude patient 32 (for now)
+counts <- counts[, -which(colnames(counts) %in% c('32A','32B','32C'))]
+
+ptID <- colnames(counts)
+samp <- counts[1,]
+counts <- counts[-1,]
 mode(counts) <- 'numeric'
 counts <- Matrix(counts, sparse = TRUE)
-# add SS6
-raw_counts_SS6 <- read.delim("data/raw_counts_SS6.txt")
-counts <- cbind(counts, SS6 = raw_counts_SS6[,2])
-rm(raw_counts_SS6)
+colnames(counts) <- samp
 
 # remove rows with 0 counts
 counts <- counts[rowSums(counts) > 0, ]
@@ -25,23 +29,25 @@ counts <- counts[rowSums(counts) > 0, ]
 # A	Baseline
 # B	0 hrs post-cardiopulmonary bypass (CPB)
 # C	24 hrs post-cardiopulmonary bypass (CPB)
-group <- gsub("([[:digit:]]+)([[:alnum:]]*)$", '',colnames(counts))
-timepoint <- gsub("([[:alpha:]]+)([[:digit:]]+)", '',colnames(counts))
+group <- gsub("([[:digit:]]+)([[:alnum:]]*)$", '',samp)
+timepoint <- gsub("([[:alpha:]]+)([[:digit:]]+)", '',samp)
 timepoint[timepoint==''] <- "0"
-patient <- gsub("([[:alpha:]]*)$", '',colnames(counts))
+patient <- gsub("([[:alpha:]]*)$", '',samp)
 mmp8 <- rep(NA, ncol(counts))
-mmp8[patient %in% paste0('SS',1:6)] <- 'MMP8-'
-mmp8[patient %in% paste0('SS',7:12)] <- 'MMP8+'
+mmp8[patient %in% paste0('SS',1:6)] <- 'MMP8+'
+mmp8[patient %in% paste0('SS',7:12)] <- 'MMP8-'
 
 pheno <- data.frame(
-    sample = colnames(counts),
+    sample = samp,
     group = group,
     timepoint = timepoint,
     patient = patient,
+    patientID = ptID,
     mmp8 = mmp8
 )
+rownames(pheno) <- samp
 
-rm(group, timepoint, patient, mmp8)
+rm(group, timepoint, patient, mmp8, samp, ptID)
 
 # color
 # Blue: ED (ambulatory, healthy) controls

@@ -1,5 +1,6 @@
-# alternate surgical control (SC) DE list
-# at least 1.5x (not log) difference in every pair of samples between two timepoints
+# combine DE methods (1) DESeq2 and (2) at least 1.5 (not log) fold change in all samples ("consistent fold change" or cfc)
+
+# MVS 
 
 # for comparison
 # DE using DESeq
@@ -9,7 +10,7 @@
     pheno$timepoint <- factor(pheno$timepoint)
     pheno$group <- factor(pheno$group, levels = c('SC','MVS','SVS','EC','SS'))
     
-    ind <- which(pheno$group=='SC')
+    ind <- which(pheno$group=='MVS')
     ds <- DESeqDataSetFromMatrix(countData = counts[,ind],
                                  colData = pheno[ind,],
                                  design= ~timepoint)
@@ -22,20 +23,20 @@
     names(res3) <- paste0('BC_', names(res3))
     
     deseq <- cbind(res1,res2,res3)
-
+    
     rm(res,res1,res2,res3,ind,ds)
-} # hits
+} # deseq
 
 source('setup.R')
 
-counts <- counts[, pheno$group == 'SC']
+counts <- counts[, pheno$group == 'MVS']
 
 cpm <- t(t(1e6*counts)/colSums(counts))
 
-pheno <- pheno[pheno$group == 'SC', ]
+pheno <- pheno[pheno$group == 'MVS', ]
 # check order
-all(pheno$sample == c("SC1A","SC1B","SC1C","SC2A","SC2B","SC2C","SC3A","SC3B","SC3C","SC4A","SC4B","SC4C","SC5A","SC5B","SC5C","SC6A","SC6B","SC6C","SC7A","SC7B","SC7C","SC8A","SC8B","SC8C"))
-all(colnames(counts) == c("SC1A","SC1B","SC1C","SC2A","SC2B","SC2C","SC3A","SC3B","SC3C","SC4A","SC4B","SC4C","SC5A","SC5B","SC5C","SC6A","SC6B","SC6C","SC7A","SC7B","SC7C","SC8A","SC8B","SC8C"))
+all(pheno$sample == c("MVS1A","MVS1B","MVS1C","MVS2A","MVS2B","MVS2C","MVS3A","MVS3B","MVS3C"))
+all(colnames(counts) == c("MVS1A","MVS1B","MVS1C","MVS2A","MVS2B","MVS2C","MVS3A","MVS3B","MVS3C"))
 
 A <- cpm[,grep('A$', pheno$sample)]
 B <- cpm[,grep('B$', pheno$sample)]
@@ -47,7 +48,7 @@ BC <- C/B; BC[is.nan(BC)] <- 1
 
 
 require(matrixStats)
-clfc <- data.frame(
+cfc <- data.frame(
     ABup = rowMins(as.matrix(AB)) > 1.5,
     ABdn = rowMaxs(as.matrix(AB)) < 2/3,
     ACup = rowMins(as.matrix(AC)) > 1.5,
@@ -55,16 +56,16 @@ clfc <- data.frame(
     BCup = rowMins(as.matrix(BC)) > 1.5,
     BCdn = rowMaxs(as.matrix(BC)) < 2/3
 )
-rownames(clfc) <- rownames(cpm)
+rownames(cfc) <- rownames(cpm)
 
 rm(A,B,C,AB,BC,AC)
 
 
-table(deseq$AB_padj < .05 & abs(deseq$AB_log2FoldChange) > 1.5, clfc$ABup | clfc$ABdn, useNA = 'ifany')
+table(deseq$AB_padj < .05 & abs(deseq$AB_log2FoldChange) > 1.5, cfc$ABup | cfc$ABdn, useNA = 'ifany')
 
-table(deseq$AC_padj < .05 & abs(deseq$AC_log2FoldChange) > 1.5, clfc$ACup | clfc$ACdn, useNA = 'ifany')
+table(deseq$AC_padj < .05 & abs(deseq$AC_log2FoldChange) > 1.5, cfc$ACup | cfc$ACdn, useNA = 'ifany')
 
-table(deseq$BC_padj < .05 & abs(deseq$BC_log2FoldChange) > 1.5, clfc$BCup | clfc$BCdn, useNA = 'ifany')
+table(deseq$BC_padj < .05 & abs(deseq$BC_log2FoldChange) > 1.5, cfc$BCup | cfc$BCdn, useNA = 'ifany')
 
 
 
@@ -72,50 +73,56 @@ table(deseq$BC_padj < .05 & abs(deseq$BC_log2FoldChange) > 1.5, clfc$BCup | clfc
 plot(deseq$AB_log2FoldChange, -log10(deseq$AB_padj), col='grey', main = 'Timepoint A vs. B', xlab='Avg Log2 FC', ylab='-log10 Padj', pch=16)
 ind <- which(deseq$AB_padj < .05 & abs(deseq$AB_log2FoldChange) > 1.5)
 points(deseq$AB_log2FoldChange[ind], -log10(deseq$AB_padj)[ind], col=4, pch=16)
-ind <- which(clfc$ABup)
+ind <- which(cfc$ABup)
 points(deseq$AB_log2FoldChange[ind], -log10(deseq$AB_padj)[ind], col=3, cex = .75, pch=16)
-ind <- which(clfc$ABdn)
+ind <- which(cfc$ABdn)
 points(deseq$AB_log2FoldChange[ind], -log10(deseq$AB_padj)[ind], col=2, cex = .75, pch=16)
 abline(v = c(-1.5,1.5), col=4); abline(h = -log10(.05), col=4)
-legend('topleft',bty='n',cex=.75,pch=16, col = c(4,3,2), legend = c('DESeq2 deseq', 'all FC >1.5', 'all FC <-1.5'))
+legend('topleft',bty='n',cex=.75,pch=16, col = c(4,3,2), legend = c('DESeq2', 'all FC >1.5', 'all FC <-1.5'))
 
 
 plot(deseq$AC_log2FoldChange, -log10(deseq$AC_padj), col='grey', main = 'Timepoint A vs. C', xlab='Avg Log2 FC', ylab='-log10 Padj', pch=16)
 ind <- which(deseq$AC_padj < .05 & abs(deseq$AC_log2FoldChange) > 1.5)
 points(deseq$AC_log2FoldChange[ind], -log10(deseq$AC_padj)[ind], col=4, pch=16)
-ind <- which(clfc$ACup)
+ind <- which(cfc$ACup)
 points(deseq$AC_log2FoldChange[ind], -log10(deseq$AC_padj)[ind], col=3, cex = .75, pch=16)
-ind <- which(clfc$ACdn)
+ind <- which(cfc$ACdn)
 points(deseq$AC_log2FoldChange[ind], -log10(deseq$AC_padj)[ind], col=2, cex = .75, pch=16)
 abline(v = c(-1.5,1.5), col=4); abline(h = -log10(.05), col=4)
-legend('topleft',bty='n',cex=.75,pch=16, col = c(4,3,2), legend = c('DESeq2 deseq', 'all FC >1.5', 'all FC <-1.5'))
+legend('topleft',bty='n',cex=.75,pch=16, col = c(4,3,2), legend = c('DESeq2', 'all FC >1.5', 'all FC <-1.5'))
 
 
 plot(deseq$BC_log2FoldChange, -log10(deseq$BC_padj), col='grey', main = 'Timepoint B vs. C', xlab='Avg Log2 FC', ylab='-log10 Padj', pch=16)
 ind <- which(deseq$BC_padj < .05 & abs(deseq$BC_log2FoldChange) > 1.5)
 points(deseq$BC_log2FoldChange[ind], -log10(deseq$BC_padj)[ind], col=4, pch=16)
-ind <- which(clfc$BCup)
+ind <- which(cfc$BCup)
 points(deseq$BC_log2FoldChange[ind], -log10(deseq$BC_padj)[ind], col=3, cex = .75, pch=16)
-ind <- which(clfc$BCdn)
+ind <- which(cfc$BCdn)
 points(deseq$BC_log2FoldChange[ind], -log10(deseq$BC_padj)[ind], col=2, cex = .75, pch=16)
 abline(v = c(-1.5,1.5), col=4); abline(h = -log10(.05), col=4)
-legend('topleft',bty='n',cex=.75,pch=16, col = c(4,3,2), legend = c('DESeq2 deseq', 'all FC >1.5', 'all FC <-1.5'))
+legend('topleft',bty='n',cex=.75,pch=16, col = c(4,3,2), legend = c('DESeq2', 'all FC >1.5', 'all FC <-1.5'))
+
+
+
+
 
 
 # A vs B
 up <- rownames(deseq)[which(deseq$AB_log2FoldChange > 1.5 & deseq$AB_padj < .05 & clfc$ABup)]
-write.table(up, file='~/Desktop/DEresults/SC/A_vs_B/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(up, file='~/Desktop/DEresults/MVS/A_vs_B/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 dn <- rownames(deseq)[which(deseq$AB_log2FoldChange < 1.5 & deseq$AB_padj < .05 & clfc$ABdn)]
-write.table(dn, file='~/Desktop/DEresults/SC/A_vs_B/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(dn, file='~/Desktop/DEresults/MVS/A_vs_B/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
 # A vs C
 up <- rownames(deseq)[which(deseq$AC_log2FoldChange > 1.5 & deseq$AC_padj < .05 & clfc$ACup)]
-write.table(up, file='~/Desktop/DEresults/SC/A_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(up, file='~/Desktop/DEresults/MVS/A_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 dn <- rownames(deseq)[which(deseq$AC_log2FoldChange < 1.5 & deseq$AC_padj < .05 & clfc$ACdn)]
-write.table(dn, file='~/Desktop/DEresults/SC/A_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(dn, file='~/Desktop/DEresults/MVS/A_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
 # B vs C
 up <- rownames(deseq)[which(deseq$BC_log2FoldChange > 1.5 & deseq$BC_padj < .05 & clfc$BCup)]
-write.table(up, file='~/Desktop/DEresults/SC/B_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(up, file='~/Desktop/DEresults/MVS/B_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 dn <- rownames(deseq)[which(deseq$BC_log2FoldChange < 1.5 & deseq$BC_padj < .05 & clfc$BCdn)]
-write.table(dn, file='~/Desktop/DEresults/SC/B_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(dn, file='~/Desktop/DEresults/MVS/B_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+
+

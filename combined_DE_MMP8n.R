@@ -26,8 +26,8 @@ cpm <- t(t(1e6*counts)/colSums(counts))
 
 pheno <- pheno[which(pheno$group == 'EC' | pheno$mmp8 == 'MMP8-'), ]
 # check order
-all(pheno$sample == c("EC1","EC2","EC3","EC4","EC5","EC6","EC7","EC8","SS1","SS2","SS3","SS4","SS5","SS6"))
-all(colnames(counts) == c("EC1","EC2","EC3","EC4","EC5","EC6","EC7","EC8","SS1","SS2","SS3","SS4","SS5","SS6"))
+all(pheno$sample == c("EC1","EC2","EC3","EC4","EC5","EC6","EC7","EC8","SS10","SS11","SS12","SS7","SS8","SS9"))
+all(colnames(counts) == c("EC1","EC2","EC3","EC4","EC5","EC6","EC7","EC8","SS10","SS11","SS12","SS7","SS8","SS9"))
 
 EC <- cpm[,1:8]
 ECbase <- rowMeans(EC)
