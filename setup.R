@@ -8,6 +8,10 @@ counts <- counts[,-1]
 # exclude patient 32 (for now)
 counts <- counts[, -which(colnames(counts) %in% c('32A','32B','32C'))]
 
+# correct mislabeling
+# patient 6 should be EC3, is labelled as SC3, which isn't a sample
+counts[1,][counts[1,] == 'SC3'] <- 'EC3'
+
 ptID <- colnames(counts)
 samp <- counts[1,]
 counts <- counts[-1,]

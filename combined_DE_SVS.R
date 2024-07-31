@@ -106,20 +106,20 @@ legend('topleft',bty='n',cex=.75,pch=16, col = c(4,3,2), legend = c('DESeq2', 'a
 
 
 # A vs B
-up <- rownames(deseq)[which(deseq$AB_log2FoldChange > 1.5 & deseq$AB_padj < .05 & clfc$ABup)]
-write.table(up, file='~/Desktop/DEresults/SVS/A_vs_B/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
-dn <- rownames(deseq)[which(deseq$AB_log2FoldChange < 1.5 & deseq$AB_padj < .05 & clfc$ABdn)]
-write.table(dn, file='~/Desktop/DEresults/SVS/A_vs_B/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+up <- rownames(deseq)[which(deseq$AB_log2FoldChange > 1.5 & deseq$AB_padj < .05 & cfc$ABup)]
+write.table(up, file='~/Desktop/DEresults/SVS_timepoint/A_vs_B/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+dn <- rownames(deseq)[which(deseq$AB_log2FoldChange < 1.5 & deseq$AB_padj < .05 & cfc$ABdn)]
+write.table(dn, file='~/Desktop/DEresults/SVS_timepoint/A_vs_B/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
 # A vs C
-up <- rownames(deseq)[which(deseq$AC_log2FoldChange > 1.5 & deseq$AC_padj < .05 & clfc$ACup)]
-write.table(up, file='~/Desktop/DEresults/SVS/A_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
-dn <- rownames(deseq)[which(deseq$AC_log2FoldChange < 1.5 & deseq$AC_padj < .05 & clfc$ACdn)]
-write.table(dn, file='~/Desktop/DEresults/SVS/A_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+up <- rownames(deseq)[which(deseq$AC_log2FoldChange > 1.5 & deseq$AC_padj < .05 & cfc$ACup)]
+write.table(up, file='~/Desktop/DEresults/SVS_timepoint/A_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+dn <- rownames(deseq)[which(deseq$AC_log2FoldChange < 1.5 & deseq$AC_padj < .05 & cfc$ACdn)]
+write.table(dn, file='~/Desktop/DEresults/SVS_timepoint/A_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
 # B vs C
-up <- rownames(deseq)[which(deseq$BC_log2FoldChange > 1.5 & deseq$BC_padj < .05 & clfc$BCup)]
-write.table(up, file='~/Desktop/DEresults/SVS/B_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
-dn <- rownames(deseq)[which(deseq$BC_log2FoldChange < 1.5 & deseq$BC_padj < .05 & clfc$BCdn)]
-write.table(dn, file='~/Desktop/DEresults/SVS/B_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+up <- rownames(deseq)[which(deseq$BC_log2FoldChange > 1.5 & deseq$BC_padj < .05 & cfc$BCup)]
+write.table(up, file='~/Desktop/DEresults/SVS_timepoint/B_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+dn <- rownames(deseq)[which(deseq$BC_log2FoldChange < 1.5 & deseq$BC_padj < .05 & cfc$BCdn)]
+write.table(dn, file='~/Desktop/DEresults/SVS_timepoint/B_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 

@@ -148,8 +148,17 @@ I swapped MMP8+ and - labels,
 are we sure SS6 is MMP8-? It's a big outlier
 
 
+2024-07-30
+----------
+trying to reconcile lists
+Anaar - some might still be mislabeled?
+send list of imputed genes in FPKM data for sample 1 (EC1)
+RPKM data MMP8 doesn't match counts data
+re-generate DE lists - I didn't change all instances of "clfc" to "cfc"
 
-so far: ~21 hours
+
+
+so far: ~22 hours
 
 
 

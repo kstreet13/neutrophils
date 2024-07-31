@@ -37,24 +37,24 @@ FC <- SS/ECbase; FC[is.nan(FC)] <- 1 # 1/0 = Inf, 0/0 = NaN
 
 
 require(matrixStats)
-clfc <- data.frame(
+cfc <- data.frame(
     FCup = rowMins(as.matrix(FC)) > 1.5,
     FCdn = rowMaxs(as.matrix(FC)) < 2/3
 )
-rownames(clfc) <- rownames(cpm)
+rownames(cfc) <- rownames(cpm)
 
 rm(FC)
 
 
-table(deseq$padj < .05 & abs(deseq$log2FoldChange) > 1.5, clfc$FCup | clfc$FCdn, useNA = 'ifany')
+table(deseq$padj < .05 & abs(deseq$log2FoldChange) > 1.5, cfc$FCup | cfc$FCdn, useNA = 'ifany')
 
 
 plot(deseq$log2FoldChange, -log10(deseq$padj), col='grey', main = 'SS (MMP8+) vs. EC', xlab='Avg Log2 FC', ylab='-log10 Padj', pch=16)
 ind <- which(deseq$padj < .05 & abs(deseq$log2FoldChange) > 1.5)
 points(deseq$log2FoldChange[ind], -log10(deseq$padj)[ind], col=4, pch=16)
-ind <- which(clfc$FCup)
+ind <- which(cfc$FCup)
 points(deseq$log2FoldChange[ind], -log10(deseq$padj)[ind], col=3, cex = .75, pch=16)
-ind <- which(clfc$FCdn)
+ind <- which(cfc$FCdn)
 points(deseq$log2FoldChange[ind], -log10(deseq$padj)[ind], col=2, cex = .75, pch=16)
 abline(v = c(-1.5,1.5), col=4); abline(h = -log10(.05), col=4)
 legend('topleft',bty='n',cex=.75,pch=16, col = c(4,3,2), legend = c('DESeq2 deseq', 'all FC >1.5', 'all FC <-1.5'))
@@ -67,9 +67,9 @@ boxplot(log1p(cpm['AC020909.3',]) ~ pheno$group)
 
 
 
-up <- rownames(deseq)[which(deseq$log2FoldChange > 1.5 & deseq$padj < .05 & clfc$FCup)]
+up <- rownames(deseq)[which(deseq$log2FoldChange > 1.5 & deseq$padj < .05 & cfc$FCup)]
 write.table(up, file='~/Desktop/DEresults/MMP8p_vs_EC/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
-dn <- rownames(deseq)[which(deseq$log2FoldChange < 1.5 & deseq$padj < .05 & clfc$FCdn)]
+dn <- rownames(deseq)[which(deseq$log2FoldChange < 1.5 & deseq$padj < .05 & cfc$FCdn)]
 write.table(dn, file='~/Desktop/DEresults/MMP8p_vs_EC/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
