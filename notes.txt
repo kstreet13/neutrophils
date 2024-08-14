@@ -157,8 +157,15 @@ RPKM data MMP8 doesn't match counts data
 re-generate DE lists - I didn't change all instances of "clfc" to "cfc"
 
 
+2024-08-06
+----------
+Anaar checked lists, they look good
+next steps: remaking figures with new lists
 
-so far: ~22 hours
+
+
+
+so far: ~23 hours
 
 
 
