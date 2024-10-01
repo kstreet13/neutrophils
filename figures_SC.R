@@ -24,7 +24,7 @@ aheatmap(log1p(heatdat),
          color = "RdBu:100",
          distfun = "pearson",
          annColors = anncolors,
-         filename = '~/Desktop/heat.png')
+         filename = '~/Desktop/heat_SC.png')
 # Expression values are normalized by dividing each count by the total for that sample and multiplying by 1 million (Counts Per Million, CPM), then adding a pseudocount of 1 and taking the natural log, to control outliers. For the heatmap, each gene's normalized expression is then standardized to a mean of 0 and standard deviation of 1 to show differences between timepoints.
 
 
@@ -106,7 +106,7 @@ plot(x,y, col=rgb(0,0,0,.5),
      xlab = 'Max. (abs) fold change from baseline',
      ylab = 'Avg. normalized expression at baseline',
      main = 'All genes')
-abline(v=0,lty=2)
+abline(v=0,lty=2,col=2)
 
 # de genes
 DEind <- which(deseq$AB_padj < .05 | deseq$AC_padj < .05 | deseq$BC_padj < .05)
@@ -114,7 +114,7 @@ plot(x[DEind], y[DEind], col=rgb(0,0,0,.5),
      xlab = 'Max. (abs) fold change from baseline',
      ylab = 'Avg. normalized expression at baseline',
      main = 'DE genes')
-abline(v=0,lty=2)
+abline(v=0,lty=2,col=2)
 
 hist(y[x < 0])
 hist(y[x > 0])
@@ -139,6 +139,20 @@ early.ind <- which(deseq$AB_padj < .05 & deseq$BC_padj > .05)
 #late.ind <- which(deseq$AC_padj < .05 & deseq$BC_padj < .05 & (sign(deseq$AC_log2FoldChange) == sign(deseq$BC_log2FoldChange)))
 late.ind <- which(deseq$AB_padj > .05 & deseq$BC_padj < .05)
 
+# continuous change:
+# DE in A->B, DE in B->C, same sign
+cont.ind <- which(deseq$AB_padj < .05 & deseq$BC_padj < .05 & (sign(deseq$AB_log2FoldChange)==sign(deseq$BC_log2FoldChange)))
+
+
+cc <- brewer.pal(5,'Set1')[c(1,3,2,5)]
+catcounts <- c(Early = length(early.ind),
+               Recovery = length(recov.ind),
+               Late = length(late.ind),
+               Progressive = length(cont.ind))
+
+barplot(catcounts,
+        col = cc, ylab = '# of Genes', xlab = 'Pattern')
+
 
 sum(deseq$AB_padj < .05, na.rm=TRUE)
 sum(deseq$AB_padj < .05 & deseq$AC_padj > .05 & (sign(deseq$AB_log2FoldChange) == -sign(deseq$BC_log2FoldChange)), na.rm = TRUE)
@@ -147,24 +161,27 @@ barplot(c(Recovery = 1924, NoRecovery = 4225-1924))
 # explainer figure
 plot(c(0,4), c(-2,2), col='white')
 abline(h=0, lty=2)
-lines(c(0,1,0), col=3, lwd=3)
-lines(c(0,-1,0), col=3, lwd=3)
-lines((1:3)-.05, c(0,1,1), col=2, lwd=3)
-lines((1:3)-.05, c(0,-1,-1), col=2, lwd=3)
-lines((1:3), c(0,0,1), col=4, lwd=3)
-lines((1:3), c(0,0,-1), col=4, lwd=3)
+lines(c(0,1,0), col=cc[2], lwd=3)
+lines(c(0,-1,0), col=cc[2], lwd=3)
+lines((1:3)-.05, c(0,1,1), col=cc[1], lwd=3)
+lines((1:3)-.05, c(0,-1,-1), col=cc[1], lwd=3)
+lines((1:3), c(0,0,1), col=cc[3], lwd=3)
+lines((1:3), c(0,0,-1), col=cc[3], lwd=3)
+lines((1:3)-.1, c(0,1,2), col=cc[4], lwd=3)
+lines((1:3)-.1, c(0,-1,-2), col=cc[4], lwd=3)
 
 
 
 pattern <- rep(NA, nrow(heatdat))
 pattern[rownames(heatdat) %in% rownames(deseq)[recov.ind]] <- 'Recovery'
-pattern[rownames(heatdat) %in% rownames(deseq)[early.ind]] <- 'Early change'
-pattern[rownames(heatdat) %in% rownames(deseq)[late.ind]] <- 'Late change'
+pattern[rownames(heatdat) %in% rownames(deseq)[early.ind]] <- 'Early'
+pattern[rownames(heatdat) %in% rownames(deseq)[late.ind]] <- 'Late'
+pattern[rownames(heatdat) %in% rownames(deseq)[cont.ind]] <- 'Progressive'
 genemeta <- data.frame(Pattern = factor(pattern))
 
 anncolors = list(
     timepoint = c(A = "green", B = "red", C = "purple"),
-    Pattern = c(`Early change` = 2, Recovery = 3, `Late change` = 4))
+    Pattern = c(Early = cc[1], Recovery = cc[2], Late = cc[3], Progressive = cc[4]))
 aheatmap(log1p(heatdat), 
          annCol = subpheno[,"timepoint",drop=FALSE],
          annRow = genemeta,
@@ -172,7 +189,7 @@ aheatmap(log1p(heatdat),
          color = "RdBu:100",
          distfun = "pearson",
          annColors = anncolors,
-         filename = '~/Desktop/heat.png')
+         filename = '~/Desktop/heat_SC.png')
 
 
 
@@ -199,3 +216,27 @@ legend('topright', col = c(2,4,3), pch = 16, bty = 'n', cex = 1,
 
 plot(deseq$AB_log2FoldChange, deseq$BC_log2FoldChange, col = alpha(cc, alpha=.5), asp = 1)
 abline(h=0,col=2);abline(v=0,col=2)
+
+
+
+
+
+
+#############
+# # LISTS # #
+#############
+early.genes <- rownames(deseq)[early.ind]
+recov.genes <- rownames(deseq)[recov.ind]
+late.genes <- rownames(deseq)[late.ind]
+cont.genes <- rownames(deseq)[cont.ind]
+
+
+
+write.table(early.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
+            file='~/Desktop/gene_lists/earlySC.txt')
+write.table(recov.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
+            file='~/Desktop/gene_lists/recovSC.txt')
+write.table(late.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
+            file='~/Desktop/gene_lists/lateSC.txt')
+write.table(cont.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
+            file='~/Desktop/gene_lists/contSC.txt')

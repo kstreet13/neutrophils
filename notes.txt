@@ -176,12 +176,52 @@ Anaar, Jeremy
 introduction to previous/ongoing work and R-21 project
 
 
+2024-10-01
+----------
+Anaar, Jeremy
+what are the main scientific questions for the datasets Jeremy is compiling?
+discuss available variables (metadata) in each
+
+first dataset: want patients with severe blunt trauma and NOT those with severe burns. 
+Take note of timepoint. 
+Some went on to have multiple organ failure: track that, if possible
+Exclude controls exposed to endotoxin, keep healthy controls
+
+second dataset: GSE40012
+want patients w/ bacterial pneumonia but without any form of virus (viral pneumonia, influenza, etc.)
+keep all timepoints, keep track
+plan for gender + age adjustment, but won't be first question
+
+third dataset: GSE20346
+include bacterial pneumonia (n=6?), note sample day (timepoint)
+exclude overlap with previous dataset
+exclude those with influenza and influenza vaccine recipients
+
+Main question: Do we see the signature (that we defined) in the groups of patients where we expect it (and not see it where we don't expect it)?
+
+4th dataset: GSE65682
+expect some patients to have signature (or not) based on source of infection
+exclude anybody with no source listed
+Jeremy: might not have source info
+
+5th dataset: GSE33341
+exclude mice
+this one is complicated
+want patients that "only had bacterimia", not "another source"
+find info on source of infection
+
+6th dataset: GSE60244
+keep those with bacterial pneumonia, exclude viral and viral+bacterial pneumonia
+include healthy controls
+
+Jeremy will send spreadsheet with variables, Anaar will annotate with which ones to keep
+Ping if no response by Monday
 
 
 
 
 
-so far: ~30 hours
+so far: ~33 hours
 
 
 
