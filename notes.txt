@@ -219,6 +219,17 @@ Ping if no response by Monday
 
 
 
+2024-10-17
+----------
+One HC patient was not actually healthy (patient 9)
+How much effort would it be to exclude them / re-run analysis?
+Anaar has list of figures needed for paper
+
+
+
+
+
+
 
 
 so far: ~33 hours
