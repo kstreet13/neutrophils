@@ -7,6 +7,8 @@ counts <- counts[,-1]
 
 # exclude patient 32 (for now)
 counts <- counts[, -which(colnames(counts) %in% c('32A','32B','32C'))]
+# exclude patient 9 (EC4) - listed as healthy control, but wasn't actually
+counts <- counts[, -which(colnames(counts) == '9')]
 
 # correct mislabeling
 # patient 6 should be EC3, is labelled as SC3, which isn't a sample

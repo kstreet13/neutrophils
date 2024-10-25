@@ -72,7 +72,7 @@ plot(pca$x[,1:2], col=pheno$color[pheno$group=='SC'], asp=1,
 } # deseq
 
 
-
+# messy black lines showing average gene expression at each timepoint. Kinda looks like a bat
 zscores <- (heatdat - rowMeans(heatdat)) / rowSds(heatdat)
 means <- t(apply(zscores,1,function(cts){
     c(mean(cts[1:8]), mean(cts[9:16]), mean(cts[17:24]))
@@ -240,3 +240,78 @@ write.table(late.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
             file='~/Desktop/gene_lists/lateSC.txt')
 write.table(cont.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
             file='~/Desktop/gene_lists/contSC.txt')
+
+
+
+
+
+# messy line plot (with colors!)
+genelist <- c(early.genes, recov.genes, late.genes, cont.genes)
+cc <- rep(brewer.pal(5,'Set1')[c(1,3,2,5)], 
+          times = c(length(early.genes), length(recov.genes), length(late.genes), length(cont.genes)))
+linedat <- as.matrix(cpm[genelist, pheno$group == 'SC'])
+linedat <- linedat[,  c(paste0('SC',1:8,'A'),paste0('SC',1:8,'B'),paste0('SC',1:8,'C'))]
+
+zscores <- (linedat - rowMeans(linedat)) / rowSds(linedat)
+means <- t(apply(zscores,1,function(cts){
+    c(mean(cts[1:8]), mean(cts[9:16]), mean(cts[17:24]))
+}))
+
+ind <- sample(nrow(linedat))
+
+plot(c(1,3), range(means), col='white')
+for(i in 1:nrow(means)){
+    lines(1:3, means[ind[i],], col=alpha(cc[ind[i]], alpha=.3))
+}
+
+
+# separated by colors
+cc <- brewer.pal(5,'Set1')[c(1,3,2,5)]
+layout(matrix(1:16,nrow=4,byrow = TRUE))
+par(mar=c(.2,.2,.2,.2))
+# early
+replicate(5, plot.new())
+plot(c(1,3), range(means), col='white', axes=FALSE); box(); axis(2)
+for(g in early.genes){
+    lines(1:3, means[g,], col=alpha(cc[1], alpha=.2))
+}
+# recov
+plot(c(1,3), range(means), col='white', axes=FALSE); box()
+for(g in recov.genes){
+    lines(1:3, means[g,], col=alpha(cc[2], alpha=.2))
+}
+plot.new()
+legend('bottomleft',bty='n', col=cc, lwd=2, legend = c('Early','Recovery','Late','Continuous'), title = 'Category')
+plot.new()
+# late
+plot(c(1,3), range(means), col='white', axes=FALSE); box(); axis(1, at=1:3, labels=LETTERS[1:3]); axis(2)
+for(g in late.genes){
+    lines(1:3, means[g,], col=alpha(cc[3], alpha=.2))
+}
+# cont
+plot(c(1,3), range(means), col='white', axes=FALSE); box(); axis(1, at=1:3, labels=LETTERS[1:3])
+for(g in cont.genes){
+    lines(1:3, means[g,], col=alpha(cc[4], alpha=.2))
+}
+replicate(5, plot.new())
+layout(1)
+par(mar=c(5,4,4,2)+.1)
+
+
+
+require(tidyverse)
+cc <- brewer.pal(5,'Set1')[c(1,3,2,5)]
+meansdf <- data.frame(means)
+names(meansdf) <- 1:3
+meansdf$gene <- rownames(means)
+meansdf$cat <- factor(rep(c('early','recov','late','cont'), 
+                          times = c(length(early.genes), length(recov.genes), length(late.genes), length(cont.genes))),
+                      levels = c('early','recov','late','cont'))
+meansdf <- pivot_longer(meansdf, cols = 1:3, names_to = 'timepoint')
+
+ggplot(meansdf) +
+    geom_line(mapping = aes(x = timepoint, y = value, color = cat, group = gene), linewidth=.1) +
+    scale_color_manual(name="Category", labels=c("early","recov","late","cont"), values=c("early"=cc[1],"recov"=cc[2],"late"=cc[3],"cont"=cc[4])) +
+    facet_wrap(~ cat)
+
+

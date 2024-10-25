@@ -227,12 +227,17 @@ Anaar has list of figures needed for paper
 
 
 
+2024-10-24
+----------
+"Flow chart of which genes to compare to SVS and MMP8:  Those that are different at the C timepoint compared to the A timepoint, because the MMP8 signature is not dynamic."
+Genes DE between A and C
+Genes have to be in same category (early, late, recovery, continuous)
+Give Jeremy the trauma data from Partek flow, get it together, do clustering
 
 
 
 
-
-so far: ~33 hours
+so far: ~34 hours
 
 
 

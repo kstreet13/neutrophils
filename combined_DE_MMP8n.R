@@ -26,12 +26,12 @@ cpm <- t(t(1e6*counts)/colSums(counts))
 
 pheno <- pheno[which(pheno$group == 'EC' | pheno$mmp8 == 'MMP8-'), ]
 # check order
-all(pheno$sample == c("EC1","EC2","EC3","EC4","EC5","EC6","EC7","EC8","SS10","SS11","SS12","SS7","SS8","SS9"))
-all(colnames(counts) == c("EC1","EC2","EC3","EC4","EC5","EC6","EC7","EC8","SS10","SS11","SS12","SS7","SS8","SS9"))
+all(pheno$sample == c("EC1","EC2","EC3","EC5","EC6","EC7","EC8","SS10","SS11","SS12","SS7","SS8","SS9"))
+all(colnames(counts) == c("EC1","EC2","EC3","EC5","EC6","EC7","EC8","SS10","SS11","SS12","SS7","SS8","SS9"))
 
-EC <- cpm[,1:8]
+EC <- cpm[,grep('EC', colnames(cpm))]
 ECbase <- rowMeans(EC)
-SS <- cpm[,9:14]
+SS <- cpm[,grep('SS', colnames(cpm))]
 
 FC <- SS/ECbase; FC[is.nan(FC)] <- 1 # 1/0 = Inf, 0/0 = NaN
 
@@ -71,8 +71,8 @@ boxplot(log1p(cpm['MMP8',]) ~ pheno$group)
 
 
 up <- rownames(deseq)[which(deseq$log2FoldChange > 1.5 & deseq$padj < .05 & cfc$FCup)]
-write.table(up, file='~/Desktop/DEresults/MMP8n_vs_EC/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(up, file='data/DEresults/MMP8n_vs_EC/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
 dn <- rownames(deseq)[which(deseq$log2FoldChange < 1.5 & deseq$padj < .05 & cfc$FCdn)]
-write.table(dn, file='~/Desktop/DEresults/MMP8n_vs_EC/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(dn, file='data/DEresults/MMP8n_vs_EC/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
