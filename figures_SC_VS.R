@@ -123,13 +123,13 @@ recovSVS <- which(deseqSVS$AB_padj < .05 & deseqSVS$BC_padj < .05 & deseqSVS$AC_
 
 # early change/no recovery:
 # DE in A->B, not in B->C
-earlyMVS <- which(deseqMVS$AB_padj < .05 & deseqMVS$BC_padj > .05)
-earlySVS <- which(deseqSVS$AB_padj < .05 & deseqSVS$BC_padj > .05)
+earlyMVS <- which(deseqMVS$AB_padj < .05 & deseqMVS$BC_padj > .05 & deseqMVS$AC_padj < .05)
+earlySVS <- which(deseqSVS$AB_padj < .05 & deseqSVS$BC_padj > .05 & deseqSVS$AC_padj < .05)
 
 # late induction:
 # not DE in A->B, DE in B->C
-lateMVS <- which(deseqMVS$AB_padj > .05 & deseqMVS$BC_padj < .05)
-lateSVS <- which(deseqSVS$AB_padj > .05 & deseqSVS$BC_padj < .05)
+lateMVS <- which(deseqMVS$AB_padj > .05 & deseqMVS$BC_padj < .05 & deseqMVS$AC_padj < .05)
+lateSVS <- which(deseqSVS$AB_padj > .05 & deseqSVS$BC_padj < .05 & deseqSVS$AC_padj < .05)
 
 # continuous change:
 # DE in A->B, DE in B->C, same sign
@@ -199,4 +199,100 @@ write.table(lateSVSgenes, quote = FALSE, col.names = FALSE, row.names = FALSE,
 write.table(contSVSgenes, quote = FALSE, col.names = FALSE, row.names = FALSE,
             file='~/Desktop/gene_lists/contSVS.txt')
 
+
+###########
+# FIGURES #
+###########
+
+# Figure 2C: volcano plot max fold change vs baseline expression, all genes
+# Dataset: all SVS samples
+
+x <- cbind(deseqSVS$AB_log2FoldChange, deseqSVS$AC_log2FoldChange)
+ind <- ifelse(abs(x[,2]) > abs(x[,1]), 2, 1)
+ind[is.na(ind)] <- 1
+x <- sapply(1:nrow(x),function(i){
+    x[i, ind[i]]
+})
+means <- cbind(
+    rowMeans(log1p(cpm[,paste0('SVS',1:4,'A')])),
+    rowMeans(log1p(cpm[,paste0('SVS',1:4,'B')])),
+    rowMeans(log1p(cpm[,paste0('SVS',1:4,'C')]))
+)
+y <- means[,1]
+
+# all genes
+plot(x,y, col=rgb(0,0,0,.5),
+     xlab = 'Max. (abs) fold change from baseline',
+     ylab = 'Avg. normalized expression at baseline',
+     main = 'All genes')
+abline(v=0,lty=2,col=2)
+
+
+# Figure 2D: volcano plot max fold change vs baseline expression, DE genes only
+# Dataset: all SVS samples
+
+# de genes
+DEind <- which(deseqSVS$AB_padj < .05 | deseqSVS$AC_padj < .05 | deseqSVS$BC_padj < .05)
+plot(x[DEind], y[DEind], col=rgb(0,0,0,.5),
+     xlab = 'Max. (abs) fold change from baseline',
+     ylab = 'Avg. normalized expression at baseline',
+     main = 'DE genes')
+abline(v=0,lty=2,col=2)
+
+
+# Figure 2E: WOULD LOVE TO HAVE A LINE GRAPH WITH 4 DIFFERENT COLORS SHOWING THE BEHAVIOR OF ALL GENES WITHIN EACH DYNAMIC CATEGORY (AS DEFINED IN THE SLIDE FOLLOWING FIGURE 2).
+# Dataset: all SVS samples
+
+# messy line plot (with colors!)
+genelist <- c(earlySVSgenes, recovSVSgenes, lateSVSgenes, contSVSgenes)
+cc <- rep(brewer.pal(5,'Set1')[c(1,3,2,5)], 
+          times = c(length(earlySVSgenes), length(recovSVSgenes), length(lateSVSgenes), length(contSVSgenes)))
+linedat <- as.matrix(cpm[genelist, pheno$group == 'SVS'])
+linedat <- linedat[,  c(paste0('SVS',1:4,'A'),paste0('SVS',1:4,'B'),paste0('SVS',1:4,'C'))]
+
+zscores <- (linedat - rowMeans(linedat)) / rowSds(linedat)
+means <- cbind(
+    rowMeans(zscores[,paste0('SVS',1:4,'A')]),
+    rowMeans(zscores[,paste0('SVS',1:4,'B')]),
+    rowMeans(zscores[,paste0('SVS',1:4,'C')])
+)
+ind <- sample(nrow(linedat))
+
+plot(c(1,3), range(means), col='white')
+for(i in 1:nrow(means)){
+    lines(1:3, means[ind[i],], col=alpha(cc[ind[i]], alpha=.3))
+}
+
+
+# separated by colors
+cc <- brewer.pal(5,'Set1')[c(1,3,2,5)]
+layout(matrix(1:16,nrow=4,byrow = TRUE))
+par(mar=c(.2,.2,.2,.2))
+# early
+replicate(5, plot.new())
+plot(c(1,3), range(means), col='white', axes=FALSE); box(); axis(2)
+for(g in earlySVSgenes){
+    lines(1:3, means[g,], col=alpha(cc[1], alpha=.2))
+}
+# recov
+plot(c(1,3), range(means), col='white', axes=FALSE); box()
+for(g in recovSVSgenes){
+    lines(1:3, means[g,], col=alpha(cc[2], alpha=.2))
+}
+plot.new()
+legend('bottomleft',bty='n', col=cc, lwd=2, legend = c('Early','Recovery','Late','Continuous'), title = 'Category')
+plot.new()
+# late
+plot(c(1,3), range(means), col='white', axes=FALSE); box(); axis(1, at=1:3, labels=LETTERS[1:3]); axis(2)
+for(g in lateSVSgenes){
+    lines(1:3, means[g,], col=alpha(cc[3], alpha=.2))
+}
+# cont
+plot(c(1,3), range(means), col='white', axes=FALSE); box(); axis(1, at=1:3, labels=LETTERS[1:3])
+for(g in contSVSgenes){
+    lines(1:3, means[g,], col=alpha(cc[4], alpha=.2))
+}
+replicate(5, plot.new())
+layout(1)
+par(mar=c(5,4,4,2)+.1)
 
