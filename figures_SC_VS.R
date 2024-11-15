@@ -224,7 +224,7 @@ y <- means[,1]
 plot(x,y, col=rgb(0,0,0,.5),
      xlab = 'Max. (abs) fold change from baseline',
      ylab = 'Avg. normalized expression at baseline',
-     main = 'All genes')
+     main = 'All genes - SVS')
 abline(v=0,lty=2,col=2)
 
 
@@ -236,7 +236,7 @@ DEind <- which(deseqSVS$AB_padj < .05 | deseqSVS$AC_padj < .05 | deseqSVS$BC_pad
 plot(x[DEind], y[DEind], col=rgb(0,0,0,.5),
      xlab = 'Max. (abs) fold change from baseline',
      ylab = 'Avg. normalized expression at baseline',
-     main = 'DE genes')
+     main = 'DE genes - SVS')
 abline(v=0,lty=2,col=2)
 
 
