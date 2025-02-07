@@ -124,34 +124,38 @@ hist(y[x > 0])
 ############
 # define recovery:
 # DE in A->B, not DE in A->C and B->C shift has opposite sign
-#recov.ind <- which(deseq$AB_padj < .05 & deseq$AC_padj > .05 & (sign(deseq$AB_log2FoldChange) == -sign(deseq$BC_log2FoldChange)))
-recov.ind <- which(deseq$AB_padj < .05 & deseq$BC_padj < .05 & deseq$AC_padj > .05)
+recovSCup <- which(deseq$AB_padj < .05 & deseq$AB_log2FoldChange > 0 & deseq$BC_padj < .05 & deseq$AC_padj > .05)
+recovSCdn <- which(deseq$AB_padj < .05 & deseq$AB_log2FoldChange < 0 & deseq$BC_padj < .05 & deseq$AC_padj > .05)
+recovSC <- c(recovSCup, recovSCdn)
 
-# down early/no recovery:
-# DE in A->B and in A->C, with same sign for both
-#down.ind <- which(deseq$AB_padj < .05 & deseq$AC_padj < .05 & deseq$AB_log2FoldChange < 0  & deseq$AC_log2FoldChange < 0)
-#norecov.ind <- which(deseq$AB_padj < .05 & deseq$AC_padj < .05 & (sign(deseq$AB_log2FoldChange) == sign(deseq$AC_log2FoldChange)))
-early.ind <- which(deseq$AB_padj < .05 & deseq$BC_padj > .05)
+# early change/no recovery:
+# DE in A->B, not in B->C
+earlySCup <- which(deseq$AB_padj < .05 & deseq$AB_log2FoldChange > 0 & deseq$BC_padj > .05 & deseq$AC_padj < .05)
+earlySCdn <- which(deseq$AB_padj < .05 & deseq$AB_log2FoldChange < 0 & deseq$BC_padj > .05 & deseq$AC_padj < .05)
+earlySC <- c(earlySCup, earlySCdn)
 
 # late induction:
-# not DE in A->B, DE in B->C and A->C
-#late.ind <- which(deseq$AB_padj > .05 & deseq$AC_padj < .05 & deseq$BC_padj < .05)
-#late.ind <- which(deseq$AC_padj < .05 & deseq$BC_padj < .05 & (sign(deseq$AC_log2FoldChange) == sign(deseq$BC_log2FoldChange)))
-late.ind <- which(deseq$AB_padj > .05 & deseq$BC_padj < .05)
+# not DE in A->B, DE in B->C
+lateSCup <- which(deseq$AB_padj > .05 & deseq$BC_padj < .05 & deseq$BC_log2FoldChange > 0 & deseq$AC_padj < .05)
+lateSCdn <- which(deseq$AB_padj > .05 & deseq$BC_padj < .05 & deseq$BC_log2FoldChange < 0 & deseq$AC_padj < .05)
+lateSC <- c(lateSCup, lateSCdn)
 
 # continuous change:
 # DE in A->B, DE in B->C, same sign
-cont.ind <- which(deseq$AB_padj < .05 & deseq$BC_padj < .05 & (sign(deseq$AB_log2FoldChange)==sign(deseq$BC_log2FoldChange)))
+contSCup <- which(deseq$AB_padj < .05 & deseq$BC_padj < .05 & (sign(deseq$AB_log2FoldChange)==sign(deseq$BC_log2FoldChange)) & deseq$AB_log2FoldChange > 0)
+contSCdn <- which(deseq$AB_padj < .05 & deseq$BC_padj < .05 & (sign(deseq$AB_log2FoldChange)==sign(deseq$BC_log2FoldChange)) & deseq$AB_log2FoldChange < 0)
+contSC <- c(contSCup, contSCdn)
 
 
+
+# BARPLOT
 cc <- brewer.pal(5,'Set1')[c(1,3,2,5)]
-catcounts <- c(Early = length(early.ind),
-               Recovery = length(recov.ind),
-               Late = length(late.ind),
-               Progressive = length(cont.ind))
+catcounts <- c(Early = length(earlySC),
+               Recovery = length(recovSC),
+               Late = length(lateSC),
+               Progressive = length(contSC))
 
-barplot(catcounts,
-        col = cc, ylab = '# of Genes', xlab = 'Pattern')
+barplot(catcounts, xlab = 'Pattern', ylab = 'Count', main = 'SC DE Gene Patterns')
 
 
 sum(deseq$AB_padj < .05, na.rm=TRUE)
@@ -225,93 +229,88 @@ abline(h=0,col=2);abline(v=0,col=2)
 #############
 # # LISTS # #
 #############
-early.genes <- rownames(deseq)[early.ind]
-recov.genes <- rownames(deseq)[recov.ind]
-late.genes <- rownames(deseq)[late.ind]
-cont.genes <- rownames(deseq)[cont.ind]
+earlySCup.genes <- rownames(deseq)[earlySCup]
+earlySCdn.genes <- rownames(deseq)[earlySCdn]
+recovSCup.genes <- rownames(deseq)[recovSCup]
+recovSCdn.genes <- rownames(deseq)[recovSCdn]
+lateSCup.genes <- rownames(deseq)[lateSCup]
+lateSCdn.genes <- rownames(deseq)[lateSCdn]
+contSCup.genes <- rownames(deseq)[contSCup]
+contSCdn.genes <- rownames(deseq)[contSCdn]
+
+
+write.table(earlySCup.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
+            file='~/Desktop/gene_lists/SC/earlySCup.txt')
+write.table(recovSCup.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
+            file='~/Desktop/gene_lists/SC/recovSCup.txt')
+write.table(lateSCup.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
+            file='~/Desktop/gene_lists/SC/lateSCup.txt')
+write.table(contSCup.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
+            file='~/Desktop/gene_lists/SC/contSCup.txt')
+write.table(earlySCdn.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
+            file='~/Desktop/gene_lists/SC/earlySCdn.txt')
+write.table(recovSCdn.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
+            file='~/Desktop/gene_lists/SC/recovSCdn.txt')
+write.table(lateSCdn.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
+            file='~/Desktop/gene_lists/SC/lateSCdn.txt')
+write.table(contSCdn.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
+            file='~/Desktop/gene_lists/SC/contSCdn.txt')
 
 
 
-write.table(early.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
-            file='~/Desktop/gene_lists/earlySC.txt')
-write.table(recov.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
-            file='~/Desktop/gene_lists/recovSC.txt')
-write.table(late.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
-            file='~/Desktop/gene_lists/lateSC.txt')
-write.table(cont.genes, quote = FALSE, col.names = FALSE, row.names = FALSE,
-            file='~/Desktop/gene_lists/contSC.txt')
 
+################################
+# Figure ??: A LINE GRAPH WITH 4 DIFFERENT COLORS SHOWING THE BEHAVIOR OF ALL GENES WITHIN EACH DYNAMIC CATEGORY (AS DEFINED IN THE SLIDE FOLLOWING FIGURE 2).
+# Dataset: all SC samples
+################################
+earlySCgenes <- unique(c(earlySCup.genes, earlySCdn.genes))
+recovSCgenes <- unique(c(recovSCup.genes, recovSCdn.genes))
+lateSCgenes <- unique(c(lateSCup.genes, lateSCdn.genes))
+contSCgenes <- unique(c(contSCup.genes, contSCdn.genes))
 
-
-
-
-# messy line plot (with colors!)
-genelist <- c(early.genes, recov.genes, late.genes, cont.genes)
-cc <- rep(brewer.pal(5,'Set1')[c(1,3,2,5)], 
-          times = c(length(early.genes), length(recov.genes), length(late.genes), length(cont.genes)))
+# messy line plot 
+genelist <- c(earlySCgenes, recovSCgenes, lateSCgenes, contSCgenes)
 linedat <- as.matrix(cpm[genelist, pheno$group == 'SC'])
-linedat <- linedat[,  c(paste0('SC',1:8,'A'),paste0('SC',1:8,'B'),paste0('SC',1:8,'C'))]
-
+linedat <- linedat[,  c(paste0('SC',1:4,'A'),paste0('SC',1:4,'B'),paste0('SC',1:4,'C'))]
 zscores <- (linedat - rowMeans(linedat)) / rowSds(linedat)
-means <- t(apply(zscores,1,function(cts){
-    c(mean(cts[1:8]), mean(cts[9:16]), mean(cts[17:24]))
-}))
-
+means <- cbind(
+    rowMeans(zscores[,paste0('SC',1:4,'A')]),
+    rowMeans(zscores[,paste0('SC',1:4,'B')]),
+    rowMeans(zscores[,paste0('SC',1:4,'C')])
+)
 ind <- sample(nrow(linedat))
 
-plot(c(1,3), range(means), col='white')
-for(i in 1:nrow(means)){
-    lines(1:3, means[ind[i],], col=alpha(cc[ind[i]], alpha=.3))
-}
-
-
-# separated by colors
-cc <- brewer.pal(5,'Set1')[c(1,3,2,5)]
-layout(matrix(1:16,nrow=4,byrow = TRUE))
-par(mar=c(.2,.2,.2,.2))
+# separated, without colors
+cc <- rep('black',4)
+layout(matrix(1:4,nrow=2,byrow = TRUE))
 # early
-replicate(5, plot.new())
-plot(c(1,3), range(means), col='white', axes=FALSE); box(); axis(2)
-for(g in early.genes){
+plot(c(1,3), range(means), col='white', axes=FALSE,
+     main = 'Early SC', xlab = 'Timepoint', ylab = 'Avg. Expression (z-score)')
+box(); axis(2); axis(1, at=1:3, labels=LETTERS[1:3])
+for(g in earlySCgenes){
     lines(1:3, means[g,], col=alpha(cc[1], alpha=.2))
 }
 # recov
-plot(c(1,3), range(means), col='white', axes=FALSE); box()
-for(g in recov.genes){
+plot(c(1,3), range(means), col='white', axes=FALSE,
+     main = 'Recovery SC', xlab = 'Timepoint', ylab = 'Avg. Expression (z-score)')
+box(); axis(2); axis(1, at=1:3, labels=LETTERS[1:3])
+for(g in recovSCgenes){
     lines(1:3, means[g,], col=alpha(cc[2], alpha=.2))
 }
-plot.new()
-legend('bottomleft',bty='n', col=cc, lwd=2, legend = c('Early','Recovery','Late','Continuous'), title = 'Category')
-plot.new()
 # late
-plot(c(1,3), range(means), col='white', axes=FALSE); box(); axis(1, at=1:3, labels=LETTERS[1:3]); axis(2)
-for(g in late.genes){
+plot(c(1,3), range(means), col='white', axes=FALSE,
+     main = 'Late SC', xlab = 'Timepoint', ylab = 'Avg. Expression (z-score)')
+box(); axis(2); axis(1, at=1:3, labels=LETTERS[1:3])
+for(g in lateSCgenes){
     lines(1:3, means[g,], col=alpha(cc[3], alpha=.2))
 }
 # cont
-plot(c(1,3), range(means), col='white', axes=FALSE); box(); axis(1, at=1:3, labels=LETTERS[1:3])
-for(g in cont.genes){
+plot(c(1,3), range(means), col='white', axes=FALSE,
+     main = 'Continuous SC', xlab = 'Timepoint', ylab = 'Avg. Expression (z-score)')
+box(); axis(2); axis(1, at=1:3, labels=LETTERS[1:3])
+for(g in contSCgenes){
     lines(1:3, means[g,], col=alpha(cc[4], alpha=.2))
 }
-replicate(5, plot.new())
 layout(1)
 par(mar=c(5,4,4,2)+.1)
-
-
-
-require(tidyverse)
-cc <- brewer.pal(5,'Set1')[c(1,3,2,5)]
-meansdf <- data.frame(means)
-names(meansdf) <- 1:3
-meansdf$gene <- rownames(means)
-meansdf$cat <- factor(rep(c('early','recov','late','cont'), 
-                          times = c(length(early.genes), length(recov.genes), length(late.genes), length(cont.genes))),
-                      levels = c('early','recov','late','cont'))
-meansdf <- pivot_longer(meansdf, cols = 1:3, names_to = 'timepoint')
-
-ggplot(meansdf) +
-    geom_line(mapping = aes(x = timepoint, y = value, color = cat, group = gene), linewidth=.1) +
-    scale_color_manual(name="Category", labels=c("early","recov","late","cont"), values=c("early"=cc[1],"recov"=cc[2],"late"=cc[3],"cont"=cc[4])) +
-    facet_wrap(~ cat)
-
 

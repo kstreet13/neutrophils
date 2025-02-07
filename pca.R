@@ -23,8 +23,9 @@ text(pca$x, labels = pheno$patient, col=pheno$color)
 
 
 require(plotly)
-
-plot_ly(data.frame(pca$x), x=~PC1, y=~PC2, z=~PC3, color = pheno$color, colors = sort(unique(pheno$color)))
+cc <- pheno$color
+cc[pheno$mmp8 == 'MMP8+'] <- 'darkorange3'
+plot_ly(data.frame(pca$x), x=~PC1, y=~PC2, z=~PC3, color = cc, colors = sort(unique(cc)))
 
 
 # PCA on subsets:

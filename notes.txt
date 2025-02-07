@@ -235,9 +235,63 @@ Genes have to be in same category (early, late, recovery, continuous)
 Give Jeremy the trauma data from Partek flow, get it together, do clustering
 
 
+2024-12-10
+----------
+keep cranking through list
+B/W versions of SC gene pattern plots (line and bar)
+MMP8 DE lists
 
 
-so far: ~34 hours
+2024-12-17
+----------
+keep cranking through list
+MMP8 DE lists
+
+
+2025-01-07
+----------
+Jeremy analysis update, no big differences between mild and severe injury
+Anaar presenting to Cobb and Kushairy(?)
+encoded each patient during each time window as either 1 (didn't receive additional immune insult) or 2 (did)
+want to control for lactate (rather than injury severity score)
+color code PCA plot by bin in previous time window
+
+
+2025-01-14
+----------
+Justin Wang, medical student collecting samples
+
+
+2025-01-21
+----------
+Anaar just met with Dr. Cobb
+Jeremy's "delta PCA" plot doesn't show much
+Jeremy didn't find any DE genes at all in any timepoint
+Anaar went through R21 stuff
+
+
+2025-01-28
+----------
+Jeremy: new delta PCA plot w/averages
+doing DE by timepoint within bins -> nothing is significant
+
+
+2025-01-28
+----------
+Jeremy: random intercept model was overfitting, singular for ~25% of genes
+sticking with bin-specific 2 timepoint models
+Anaar preparing abstract
+ran DE in Excel: all samples in a timepoint vs (3) healthy controls
+pathways make biological sense
+want a line plot showing patterns - up, down, recovery
+can run clustering on gene dynamics (fold changes)
+Anaar will send count data soon
+
+
+
+
+
+so far: ~40 hours
 
 
 

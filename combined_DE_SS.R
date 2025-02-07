@@ -61,9 +61,10 @@ legend('topleft',bty='n',cex=.75,pch=16, col = c(4,3,2), legend = c('DESeq2 dese
 
 
 
-# example problematic gene: AC020909.3
-boxplot(cpm['AC020909.3',] ~ pheno$group); abline(h = ECbase['AC020909.3'], lty=2)
-boxplot(log1p(cpm['AC020909.3',]) ~ pheno$group)
+# example problematic gene: A2M has positive log2FC (by DESeq2), but is "consistently down"
+# it's because DESeq2 handles outliers, but simple average doesn't
+boxplot(cpm['A2M',] ~ pheno$group); abline(h = ECbase['A2M'], lty=2)
+boxplot(log1p(cpm['A2M',]) ~ pheno$group); abline(h = log1p(ECbase['A2M']), lty=2)
 
 
 
