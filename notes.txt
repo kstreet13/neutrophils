@@ -288,6 +288,12 @@ can run clustering on gene dynamics (fold changes)
 Anaar will send count data soon
 
 
+2025-02-11
+----------
+updates from my figures showing gene expression patterns over time
+hard to compare timepoints to 3 healthy controls AND correct for lactate
+
+
 
 
 
