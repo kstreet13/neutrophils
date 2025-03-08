@@ -93,8 +93,9 @@ source('setup.R')
 cpm <- t(t(1e6*counts)/colSums(counts))
 
 require(readxl)
-genelist <- read_excel('data/MMP8+ SS.xlsx', col_names = FALSE)
-genelist <- genelist[,1, drop=TRUE]
+GLup <- read_excel('data/MMP8+ SS.xlsx', col_names = FALSE)
+GLdn <- read_excel('data/MMP8+ SS.xlsx', col_names = FALSE, sheet = 2)
+genelist <- unique(c(GLup[,1, drop=TRUE], GLdn[,1, drop=TRUE]))
 
 heatdat <- log1p(as.matrix(cpm[genelist, ]))
 heatavg <- rowMeans(heatdat[, pheno$group == 'EC'])
