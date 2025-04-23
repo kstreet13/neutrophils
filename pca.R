@@ -6,8 +6,8 @@ boxplot(as.matrix(log1p(cpm)), col = pheno$color)
 
 require(EDASeq)
 
-plotRLE(as.matrix(counts), col = pheno$color)
-plotRLE(as.matrix(cpm), col = pheno$color)
+# plotRLE(as.matrix(counts), col = pheno$color)
+# plotRLE(as.matrix(cpm), col = pheno$color)
 
 # quick PCA
 filt <- which(rowMeans(cpm) > 1)

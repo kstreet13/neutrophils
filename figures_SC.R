@@ -96,6 +96,15 @@ x <- sapply(1:nrow(x),function(i){
     x[i, ind[i]]
 })
 
+# stats for paper:
+absx <- abs(x)
+length(which(absx > 1.5 & absx <= 2.5))
+length(which(absx > 2.5 & absx <= 5))
+length(which(absx > 5 & absx <= 10))
+length(which(absx > 10))
+
+
+
 means <- t(apply(log1p(cpm),1,function(cts){
     c(mean(cts[1:8]), mean(cts[9:16]), mean(cts[17:24]))
 }))

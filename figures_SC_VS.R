@@ -78,6 +78,8 @@ plot3d(pca$x[,1:3], col = pheno$color[pheno$group %in% c('SC','MVS','SVS')],
 
 # Figure 2C: volcano plot max fold change vs baseline expression, all genes
 # Dataset: all SVS samples
+# deseq object from combined_DE_SVS.R
+deseqSVS <- deseq
 
 x <- cbind(deseqSVS$AB_log2FoldChange, deseqSVS$AC_log2FoldChange)
 ind <- ifelse(abs(x[,2]) > abs(x[,1]), 2, 1)
@@ -91,6 +93,14 @@ means <- cbind(
     rowMeans(log1p(cpm[,paste0('SVS',1:4,'C')]))
 )
 y <- means[,1]
+
+# stats for paper:
+absx <- abs(x)
+length(which(absx > 1.5 & absx <= 2.5))
+length(which(absx > 2.5 & absx <= 5))
+length(which(absx > 5 & absx <= 10))
+length(which(absx > 10))
+
 
 # all genes
 plot(x,y, col=rgb(0,0,0,.5),
