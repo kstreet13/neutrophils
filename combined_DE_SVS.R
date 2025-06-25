@@ -123,3 +123,22 @@ write.table(up, file='~/Desktop/DEresults/SVS_timepoint/B_vs_C/up.csv', row.name
 dn <- rownames(deseq)[which(deseq$BC_log2FoldChange < 1.5 & deseq$BC_padj < .05 & cfc$BCdn)]
 write.table(dn, file='~/Desktop/DEresults/SVS_timepoint/B_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
+
+# The number of consistently, substantially and significantly changed genes with
+# absolute log fold changes 1.5-2.5; 2.5-5, 5-10, >10 for both the surgical
+# control signature and severe vasoplegic syndrome signature (to be added to the
+# text). For comparisons A-B and A-C
+# A vs B
+up <- deseq[which(deseq$AB_log2FoldChange > 1.5 & deseq$AB_padj < .05 & cfc$ABup), ]
+dn <- deseq[which(deseq$AB_log2FoldChange < 1.5 & deseq$AB_padj < .05 & cfc$ABdn), ]
+SVS_AB_up <- table(cut(abs(up$AB_log2FoldChange), breaks = c(1.5,2.5,5,10,Inf)))
+SVS_AB_dn <- table(cut(abs(dn$AB_log2FoldChange), breaks = c(1.5,2.5,5,10,Inf)))
+
+# A vs C
+up <- deseq[which(deseq$AC_log2FoldChange > 1.5 & deseq$AC_padj < .05 & cfc$ACup), ]
+dn <- deseq[which(deseq$AC_log2FoldChange < 1.5 & deseq$AC_padj < .05 & cfc$ACdn), ]
+SVS_AC_up <- table(cut(abs(up$AC_log2FoldChange), breaks = c(1.5,2.5,5,10,Inf)))
+SVS_AC_dn <- table(cut(abs(dn$AC_log2FoldChange), breaks = c(1.5,2.5,5,10,Inf)))
+
+cbind(SVS_AB_up, SVS_AB_dn, SVS_AC_up, SVS_AC_dn)
+
