@@ -2,13 +2,12 @@ source('setup.R')
 cpm <- t(t(1e6*counts)/colSums(counts))
 
 genelist <- unique(c(
-    read.table('data/DEresults/MVS_timepoint/A_vs_B/down.csv')[,1],
-    read.table('data/DEresults/MVS_timepoint/A_vs_B/up.csv')[,1],
-    read.table('data/DEresults/MVS_timepoint/A_vs_C/down.csv')[,1],
-    read.table('data/DEresults/MVS_timepoint/A_vs_C/up.csv')[,1],
-    read.table('data/DEresults/MVS_timepoint/B_vs_C/down.csv')[,1],
-    read.table('data/DEresults/MVS_timepoint/B_vs_C/up.csv')[,1],
-    
+    # read.table('data/DEresults/MVS_timepoint/A_vs_B/down.csv')[,1],
+    # read.table('data/DEresults/MVS_timepoint/A_vs_B/up.csv')[,1],
+    # read.table('data/DEresults/MVS_timepoint/A_vs_C/down.csv')[,1],
+    # read.table('data/DEresults/MVS_timepoint/A_vs_C/up.csv')[,1],
+    # read.table('data/DEresults/MVS_timepoint/B_vs_C/down.csv')[,1],
+    # read.table('data/DEresults/MVS_timepoint/B_vs_C/up.csv')[,1],
     read.table('data/DEresults/SVS_timepoint/A_vs_B/down.csv')[,1],
     read.table('data/DEresults/SVS_timepoint/A_vs_B/up.csv')[,1],
     read.table('data/DEresults/SVS_timepoint/A_vs_C/down.csv')[,1],
