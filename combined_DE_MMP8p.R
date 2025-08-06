@@ -70,6 +70,6 @@ boxplot(log1p(cpm['AC020909.3',]) ~ pheno$group)
 up <- rownames(deseq)[which(deseq$log2FoldChange > 1.5 & deseq$padj < .05 & cfc$FCup)]
 write.table(up, file='data/DEresults/MMP8p_vs_EC/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
-dn <- rownames(deseq)[which(deseq$log2FoldChange < 1.5 & deseq$padj < .05 & cfc$FCdn)]
+dn <- rownames(deseq)[which(deseq$log2FoldChange < -1.5 & deseq$padj < .05 & cfc$FCdn)]
 write.table(dn, file='data/DEresults/MMP8p_vs_EC/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 

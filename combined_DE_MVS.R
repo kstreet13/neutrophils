@@ -109,20 +109,56 @@ legend('topleft',bty='n',cex=.75,pch=16, col = c(4,3,2), legend = c('DESeq2', 'a
 
 # A vs B
 up <- rownames(deseq)[which(deseq$AB_log2FoldChange > 1.5 & deseq$AB_padj < .05 & cfc$ABup)]
-write.table(up, file='~/Desktop/DEresults/MVS_timepoint/A_vs_B/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
-dn <- rownames(deseq)[which(deseq$AB_log2FoldChange < 1.5 & deseq$AB_padj < .05 & cfc$ABdn)]
-write.table(dn, file='~/Desktop/DEresults/MVS_timepoint/A_vs_B/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(up, file='data/DEresults/MVS_timepoint/A_vs_B/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+dn <- rownames(deseq)[which(deseq$AB_log2FoldChange < -1.5 & deseq$AB_padj < .05 & cfc$ABdn)]
+write.table(dn, file='data/DEresults/MVS_timepoint/A_vs_B/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
 # A vs C
 up <- rownames(deseq)[which(deseq$AC_log2FoldChange > 1.5 & deseq$AC_padj < .05 & cfc$ACup)]
-write.table(up, file='~/Desktop/DEresults/MVS_timepoint/A_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
-dn <- rownames(deseq)[which(deseq$AC_log2FoldChange < 1.5 & deseq$AC_padj < .05 & cfc$ACdn)]
-write.table(dn, file='~/Desktop/DEresults/MVS_timepoint/A_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(up, file='data/DEresults/MVS_timepoint/A_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+dn <- rownames(deseq)[which(deseq$AC_log2FoldChange < -1.5 & deseq$AC_padj < .05 & cfc$ACdn)]
+write.table(dn, file='data/DEresults/MVS_timepoint/A_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
 # B vs C
 up <- rownames(deseq)[which(deseq$BC_log2FoldChange > 1.5 & deseq$BC_padj < .05 & cfc$BCup)]
-write.table(up, file='~/Desktop/DEresults/MVS_timepoint/B_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
-dn <- rownames(deseq)[which(deseq$BC_log2FoldChange < 1.5 & deseq$BC_padj < .05 & cfc$BCdn)]
-write.table(dn, file='~/Desktop/DEresults/MVS_timepoint/B_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(up, file='data/DEresults/MVS_timepoint/B_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+dn <- rownames(deseq)[which(deseq$BC_log2FoldChange < -1.5 & deseq$BC_padj < .05 & cfc$BCdn)]
+write.table(dn, file='data/DEresults/MVS_timepoint/B_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+
+
+###############
+# Max FC bins #
+###############
+# Max fold change 1.5-2.5,2.5-5,5-10 at AB, BC, or AC
+maxFC <- apply(cbind(deseq$AB_log2FoldChange, deseq$BC_log2FoldChange, deseq$AC_log2FoldChange), 1, function(x){
+    if(is.na(x[1])){
+        return(NA)
+    }else{
+        return(x[which.max(abs(x))])
+    }
+})
+whichMaxFC <- apply(cbind(deseq$AB_log2FoldChange, deseq$BC_log2FoldChange, deseq$AC_log2FoldChange), 1, function(x){
+    if(is.na(x[1])){
+        return(0)
+    }else{
+        return(c("AB","BC","AC")[which.max(abs(x))])
+    }
+})
+
+# only use significant genes
+genelist <- unique(c(
+    read.table('data/DEresults/MVS_timepoint/A_vs_B/down.csv')[,1],
+    read.table('data/DEresults/MVS_timepoint/A_vs_B/up.csv')[,1],
+    read.table('data/DEresults/MVS_timepoint/A_vs_C/down.csv')[,1],
+    read.table('data/DEresults/MVS_timepoint/A_vs_C/up.csv')[,1],
+    read.table('data/DEresults/MVS_timepoint/B_vs_C/down.csv')[,1],
+    read.table('data/DEresults/MVS_timepoint/B_vs_C/up.csv')[,1]
+))
+idx <- which(rownames(deseq) %in% genelist)
+
+tab <- table(cut(maxFC[idx], breaks=c(-Inf,-10,-5,-2.5,-1.5,1.5,2.5,5,10,Inf)),
+             whichMaxFC[idx])
+
+write.csv(tab, file='data/DEresults/MVS_timepoint/maxAbsFCbins.csv')
 
 

@@ -10,8 +10,8 @@ require(EDASeq)
 # plotRLE(as.matrix(cpm), col = pheno$color)
 
 # quick PCA
-filt <- which(rowMeans(cpm) > 1)
-#filt <- which(rowVars(cpm) >= sort(rowVars(cpm), decreasing = TRUE)[10000])
+#filt <- which(rowMeans(cpm) > 1)
+filt <- which(rowVars(cpm) >= sort(rowVars(cpm), decreasing = TRUE)[5000])
 
 pca <- BiocSingular::runPCA(t(log1p(cpm[filt, ])), rank=64)
 
