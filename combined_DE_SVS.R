@@ -107,21 +107,21 @@ legend('topleft',bty='n',cex=.75,pch=16, col = c(4,3,2), legend = c('DESeq2', 'a
 
 # A vs B
 up <- rownames(deseq)[which(deseq$AB_log2FoldChange > 1.5 & deseq$AB_padj < .05 & cfc$ABup)]
-write.table(up, file='~/Desktop/DEresults/SVS_timepoint/A_vs_B/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(up, file='data/DEresults/SVS_timepoint/A_vs_B/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 dn <- rownames(deseq)[which(deseq$AB_log2FoldChange < -1.5 & deseq$AB_padj < .05 & cfc$ABdn)]
-write.table(dn, file='~/Desktop/DEresults/SVS_timepoint/A_vs_B/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(dn, file='data/DEresults/SVS_timepoint/A_vs_B/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
 # A vs C
 up <- rownames(deseq)[which(deseq$AC_log2FoldChange > 1.5 & deseq$AC_padj < .05 & cfc$ACup)]
-write.table(up, file='~/Desktop/DEresults/SVS_timepoint/A_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(up, file='data/DEresults/SVS_timepoint/A_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 dn <- rownames(deseq)[which(deseq$AC_log2FoldChange < -1.5 & deseq$AC_padj < .05 & cfc$ACdn)]
-write.table(dn, file='~/Desktop/DEresults/SVS_timepoint/A_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(dn, file='data/DEresults/SVS_timepoint/A_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
 # B vs C
 up <- rownames(deseq)[which(deseq$BC_log2FoldChange > 1.5 & deseq$BC_padj < .05 & cfc$BCup)]
-write.table(up, file='~/Desktop/DEresults/SVS_timepoint/B_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(up, file='data/DEresults/SVS_timepoint/B_vs_C/up.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 dn <- rownames(deseq)[which(deseq$BC_log2FoldChange < -1.5 & deseq$BC_padj < .05 & cfc$BCdn)]
-write.table(dn, file='~/Desktop/DEresults/SVS_timepoint/B_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(dn, file='data/DEresults/SVS_timepoint/B_vs_C/down.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
 
 
 # The number of consistently, substantially and significantly changed genes with
@@ -164,19 +164,19 @@ whichMaxFC <- apply(cbind(deseq$AB_log2FoldChange, deseq$BC_log2FoldChange, dese
 
 # only use significant genes
 genelist <- unique(c(
-    read.table('~/Desktop/DEresults/SVS_timepoint/A_vs_B/down.csv')[,1],
-    read.table('~/Desktop/DEresults/SVS_timepoint/A_vs_B/up.csv')[,1],
-    read.table('~/Desktop/DEresults/SVS_timepoint/A_vs_C/down.csv')[,1],
-    read.table('~/Desktop/DEresults/SVS_timepoint/A_vs_C/up.csv')[,1],
-    read.table('~/Desktop/DEresults/SVS_timepoint/B_vs_C/down.csv')[,1],
-    read.table('~/Desktop/DEresults/SVS_timepoint/B_vs_C/up.csv')[,1]
+    read.table('data/DEresults/SVS_timepoint/A_vs_B/down.csv')[,1],
+    read.table('data/DEresults/SVS_timepoint/A_vs_B/up.csv')[,1],
+    read.table('data/DEresults/SVS_timepoint/A_vs_C/down.csv')[,1],
+    read.table('data/DEresults/SVS_timepoint/A_vs_C/up.csv')[,1],
+    read.table('data/DEresults/SVS_timepoint/B_vs_C/down.csv')[,1],
+    read.table('data/DEresults/SVS_timepoint/B_vs_C/up.csv')[,1]
 ))
 idx <- which(rownames(deseq) %in% genelist)
 
 tab <- table(cut(maxFC[idx], breaks=c(-Inf,-10,-5,-2.5,-1.5,1.5,2.5,5,10,Inf)),
              whichMaxFC[idx])
 
-write.csv(tab, file='~/Desktop/DEresults/SVS_timepoint/maxAbsFCbins.csv')
+write.csv(tab, file='data/DEresults/SVS_timepoint/maxAbsFCbins.csv')
 
 
 
@@ -193,21 +193,21 @@ BCup <- read.table('data/DEresults/SVS_timepoint/B_vs_C/up.csv')[,1]
 
 # "DE" means by all 3 criteria
 # recovery:
-# DE in A->B, DE in B->C (opposite direction), not DE in A->C
-recovSVSup <- which(rownames(deseq) %in% ABup & rownames(deseq) %in% BCdn & !(rownames(deseq) %in% c(ACup,ACdn)))
-recovSVSdn <- which(rownames(deseq) %in% ABdn & rownames(deseq) %in% BCup & !(rownames(deseq) %in% c(ACup,ACdn)))
+# DE in A->B, DE in B->C (opposite direction)
+recovSVSup <- which(rownames(deseq) %in% ABup & rownames(deseq) %in% BCdn)
+recovSVSdn <- which(rownames(deseq) %in% ABdn & rownames(deseq) %in% BCup)
 recovSVS <- c(recovSVSup, recovSVSdn)
 
 # early change/no recovery:
-# DE in A->B, A->C, not in B->C
-earlySVSup <- which(rownames(deseq) %in% ABup & !(rownames(deseq) %in% c(BCup,BCdn)) & rownames(deseq) %in% ACup)
-earlySVSdn <- which(rownames(deseq) %in% ABdn & !(rownames(deseq) %in% c(BCup,BCdn)) & rownames(deseq) %in% ACdn)
+# DE in A->B, not in B->C
+earlySVSup <- which(rownames(deseq) %in% ABup & !(rownames(deseq) %in% c(BCup,BCdn)))
+earlySVSdn <- which(rownames(deseq) %in% ABdn & !(rownames(deseq) %in% c(BCup,BCdn)))
 earlySVS <- c(earlySVSup, earlySVSdn)
 
 # late induction:
-# not DE in A->B, DE in B->C, A->C
-lateSVSup <- which(!(rownames(deseq) %in% c(ABup,ABdn)) & rownames(deseq) %in% BCup & rownames(deseq) %in% ACup)
-lateSVSdn <- which(!(rownames(deseq) %in% c(ABup,ABdn)) & rownames(deseq) %in% BCdn & rownames(deseq) %in% ACdn)
+# not DE in A->B, DE in B->C
+lateSVSup <- which(!(rownames(deseq) %in% c(ABup,ABdn)) & rownames(deseq) %in% BCup)
+lateSVSdn <- which(!(rownames(deseq) %in% c(ABup,ABdn)) & rownames(deseq) %in% BCdn)
 lateSVS <- c(lateSVSup, lateSVSdn)
 
 # continuous change:
@@ -228,6 +228,18 @@ lateSVSup.genes <- rownames(deseq)[lateSVSup]
 lateSVSdn.genes <- rownames(deseq)[lateSVSdn]
 contSVSup.genes <- rownames(deseq)[contSVSup]
 contSVSdn.genes <- rownames(deseq)[contSVSdn]
+
+
+# write gene lists
+write.table(earlySVSup.genes, file='data/DEresults/SVS_timepoint/patterns/earlySVSup.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(earlySVSdn.genes, file='data/DEresults/SVS_timepoint/patterns/earlySVSdn.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(recovSVSup.genes, file='data/DEresults/SVS_timepoint/patterns/recovSVSup.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(recovSVSdn.genes, file='data/DEresults/SVS_timepoint/patterns/recovSVSdn.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(lateSVSup.genes, file='data/DEresults/SVS_timepoint/patterns/lateSVSup.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(lateSVSdn.genes, file='data/DEresults/SVS_timepoint/patterns/lateSVSdn.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(contSVSup.genes, file='data/DEresults/SVS_timepoint/patterns/contSVSup.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(contSVSdn.genes, file='data/DEresults/SVS_timepoint/patterns/contSVSdn.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+
 
 
 
@@ -285,4 +297,43 @@ for(g in contSVSgenes){
 }
 layout(1)
 par(mar=c(5,4,4,2)+.1)
+
+
+
+
+# big table of all DE genes
+# which ABup/ACup/etc. group
+# which pattern
+
+genes <- unique(c(ABup,ABdn,ACup,ACdn,BCup,BCdn))
+
+tab <- data.frame(gene = genes,
+                  ABdn = genes %in% ABdn,
+                  ABup = genes %in% ABup,
+                  BCdn = genes %in% BCdn,
+                  BCup = genes %in% BCup,
+                  ACdn = genes %in% ACdn,
+                  ACup = genes %in% ACup,
+                  earlySVSup = genes %in% earlySVSup.genes,
+                  earlySVSdn = genes %in% earlySVSdn.genes,
+                  lateSVSup = genes %in% lateSVSup.genes,
+                  lateSVSdn = genes %in% lateSVSdn.genes,
+                  recovSVSup = genes %in% recovSVSup.genes,
+                  recovSVSdn = genes %in% recovSVSdn.genes,
+                  contSVSup = genes %in% contSVSup.genes,
+                  contSVSdn = genes %in% contSVSdn.genes
+)
+
+
+write.table(tab, file='~/Desktop/allSVSgenes.csv', sep = ',', row.names = FALSE, quote = FALSE)
+
+
+
+
+# check
+
+length(c(recovSVSgenes, contSVSgenes, lateSVSgenes, earlySVSgenes))
+length(ACup[!ACup %in% c(ABup,ABdn,BCup,BCdn)])
+length(ACdn[!ACdn %in% c(ABup,ABdn,BCup,BCdn)])
+# sum should be same as nrow(tab)
 

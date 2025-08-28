@@ -190,21 +190,21 @@ BCup <- read.table('data/DEresults/SC_timepoint/B_vs_C/up.csv')[,1]
 
 # "DE" means by all 3 criteria
 # recovery:
-# DE in A->B, DE in B->C (opposite direction), not DE in A->C
-recovSCup <- which(rownames(deseq) %in% ABup & rownames(deseq) %in% BCdn & !(rownames(deseq) %in% c(ACup,ACdn)))
-recovSCdn <- which(rownames(deseq) %in% ABdn & rownames(deseq) %in% BCup & !(rownames(deseq) %in% c(ACup,ACdn)))
+# DE in A->B, DE in B->C (opposite direction)
+recovSCup <- which(rownames(deseq) %in% ABup & rownames(deseq) %in% BCdn)
+recovSCdn <- which(rownames(deseq) %in% ABdn & rownames(deseq) %in% BCup)
 recovSC <- c(recovSCup, recovSCdn)
 
 # early change/no recovery:
-# DE in A->B, A->C, not in B->C
-earlySCup <- which(rownames(deseq) %in% ABup & !(rownames(deseq) %in% c(BCup,BCdn)) & rownames(deseq) %in% ACup)
-earlySCdn <- which(rownames(deseq) %in% ABdn & !(rownames(deseq) %in% c(BCup,BCdn)) & rownames(deseq) %in% ACdn)
+# DE in A->B, not in B->C
+earlySCup <- which(rownames(deseq) %in% ABup & !(rownames(deseq) %in% c(BCup,BCdn)))
+earlySCdn <- which(rownames(deseq) %in% ABdn & !(rownames(deseq) %in% c(BCup,BCdn)))
 earlySC <- c(earlySCup, earlySCdn)
 
 # late induction:
-# not DE in A->B, DE in B->C, A->C
-lateSCup <- which(!(rownames(deseq) %in% c(ABup,ABdn)) & rownames(deseq) %in% BCup & rownames(deseq) %in% ACup)
-lateSCdn <- which(!(rownames(deseq) %in% c(ABup,ABdn)) & rownames(deseq) %in% BCdn & rownames(deseq) %in% ACdn)
+# not DE in A->B, DE in B->C
+lateSCup <- which(!(rownames(deseq) %in% c(ABup,ABdn)) & rownames(deseq) %in% BCup)
+lateSCdn <- which(!(rownames(deseq) %in% c(ABup,ABdn)) & rownames(deseq) %in% BCdn)
 lateSC <- c(lateSCup, lateSCdn)
 
 # continuous change:
@@ -225,6 +225,18 @@ lateSCup.genes <- rownames(deseq)[lateSCup]
 lateSCdn.genes <- rownames(deseq)[lateSCdn]
 contSCup.genes <- rownames(deseq)[contSCup]
 contSCdn.genes <- rownames(deseq)[contSCdn]
+
+
+# write gene lists
+write.table(earlySCup.genes, file='data/DEresults/SC_timepoint/patterns/earlySCup.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(earlySCdn.genes, file='data/DEresults/SC_timepoint/patterns/earlySCdn.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(recovSCup.genes, file='data/DEresults/SC_timepoint/patterns/recovSCup.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(recovSCdn.genes, file='data/DEresults/SC_timepoint/patterns/recovSCdn.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(lateSCup.genes, file='data/DEresults/SC_timepoint/patterns/lateSCup.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(lateSCdn.genes, file='data/DEresults/SC_timepoint/patterns/lateSCdn.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(contSCup.genes, file='data/DEresults/SC_timepoint/patterns/contSCup.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+write.table(contSCdn.genes, file='data/DEresults/SC_timepoint/patterns/contSCdn.csv', row.names = FALSE, quote = FALSE, col.names = FALSE)
+
 
 
 
@@ -282,4 +294,43 @@ for(g in contSCgenes){
 }
 layout(1)
 par(mar=c(5,4,4,2)+.1)
+
+
+
+
+# big table of all DE genes
+# which ABup/ACup/etc. group
+# which pattern
+
+genes <- unique(c(ABup,ABdn,ACup,ACdn,BCup,BCdn))
+
+tab <- data.frame(gene = genes,
+           ABdn = genes %in% ABdn,
+           ABup = genes %in% ABup,
+           BCdn = genes %in% BCdn,
+           BCup = genes %in% BCup,
+           ACdn = genes %in% ACdn,
+           ACup = genes %in% ACup,
+           earlySCup = genes %in% earlySCup.genes,
+           earlySCdn = genes %in% earlySCdn.genes,
+           lateSCup = genes %in% lateSCup.genes,
+           lateSCdn = genes %in% lateSCdn.genes,
+           recovSCup = genes %in% recovSCup.genes,
+           recovSCdn = genes %in% recovSCdn.genes,
+           contSCup = genes %in% contSCup.genes,
+           contSCdn = genes %in% contSCdn.genes
+           )
+
+
+write.table(tab, file='~/Desktop/allSCgenes.csv', sep = ',', row.names = FALSE, quote = FALSE)
+
+
+
+
+# check
+
+length(c(recovSCgenes, contSCgenes, lateSCgenes, earlySCgenes))
+length(ACup[!ACup %in% c(ABup,ABdn,BCup,BCdn)])
+length(ACdn[!ACdn %in% c(ABup,ABdn,BCup,BCdn)])
+# sum should be same as nrow(tab)
 
