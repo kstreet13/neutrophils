@@ -294,10 +294,14 @@ updates from my figures showing gene expression patterns over time
 hard to compare timepoints to 3 healthy controls AND correct for lactate
 
 
-
-
-
-so far: ~40 hours
+2025-09-02
+----------
+Anaar, James, Joseph Cuschieri, Perren Cobb
+overview of secondary analysis project
+practices may have changed since first paper ("Genomic Storm"), later timepoints may look different
+start by using "our list" of genes, see how samples separate by these genes
+start with just time 0 samples, see if we see signal of "pro-invasive" signature
+"normalize" all datasets from 0-100 (uniform), add zeros for missing genes, combine and cluster
 
 
 
