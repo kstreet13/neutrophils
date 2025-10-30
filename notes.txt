@@ -304,7 +304,10 @@ start with just time 0 samples, see if we see signal of "pro-invasive" signature
 "normalize" all datasets from 0-100 (uniform), add zeros for missing genes, combine and cluster
 
 
-
+2025-09-23
+----------
+is it possible that some of the genes we call DE are very lowly expressed?
+to do: check the average CPM for DE genes
 
 
 

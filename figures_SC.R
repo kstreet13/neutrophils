@@ -25,6 +25,7 @@ aheatmap(log1p(heatdat),
          distfun = "pearson",
          annColors = anncolors,
          filename = '~/Desktop/heat_SC.png')
+
 # Expression values are normalized by dividing each count by the total for that sample and multiplying by 1 million (Counts Per Million, CPM), then adding a pseudocount of 1 and taking the natural log, to control outliers. For the heatmap, each gene's normalized expression is then standardized to a mean of 0 and standard deviation of 1 to show differences between timepoints.
 
 
