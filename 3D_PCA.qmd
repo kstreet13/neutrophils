@@ -5,7 +5,6 @@ editor: visual
 embed-resources: true
 ---
 
-
 ```{r}
 #| message: false
 #| echo: false
@@ -62,7 +61,28 @@ pheno$shape_plotly[pheno$shape == '16'] <- 'circle'
 require(plotly)
 plot_ly(data.frame(pca$x), x=~PC1, y=~PC2, z=~PC3,
         color = pheno$color2, colors = sort(unique(pheno$color2)),
-        symbol = ~pheno$shape_plotly, symbols = sort(unique(pheno$shape_plotly)))
+        symbol = ~pheno$shape_plotly, symbols = sort(unique(pheno$shape_plotly)),
+        showlegend = FALSE)
 
 ```
 
+```{r}
+#| message: false
+#| echo: false
+
+plot.new()
+legend('topleft', pch=1, title = 'Control', bty='n',
+       col = c('green','red','purple'), 
+       legend = c('Pre-op','0hr Post-CPB','24hr Post-CPB'))
+legend('top', pch=16, title = 'Mild VS', bty='n',
+       col = c('green','red','purple'), 
+       legend = c('Pre-op','0hr Post-CPB','24hr Post-CPB'))
+legend('topright', pch=15, title = 'Severe VS', bty='n',
+       col = c('green','red','purple'), 
+       legend = c('Pre-op','0hr Post-CPB','24hr Post-CPB'))
+
+legend('left', pch=1, bty='n',
+       col = c('blue','orange','brown4'), 
+       legend = c('Healthy Control','MMP8- Septic Shock','MMP8+ Septic Shock'))
+
+```
